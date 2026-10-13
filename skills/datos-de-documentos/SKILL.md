@@ -4,7 +4,7 @@ description: 'Pasa facturas, pedidos y correos a una tabla revisable, sin invent
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # Datos de documentos

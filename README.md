@@ -64,11 +64,18 @@ Quedan disponibles como `/negocio-pequeno:empezar`, `/negocio-pequeno:reclamar-f
 npx skills add katasavyuk-pixel/skills-negocio-pequeno
 ```
 
-### En la aplicación de Claude, una a una
+### En la aplicación de Claude, sin terminal
 
-1. Descarga la carpeta de la skill que quieras, por ejemplo `skills/reclamar-facturas`, entera.
-2. Comprímela en un ZIP de forma que dentro quede la carpeta: `reclamar-facturas/SKILL.md`, `reclamar-facturas/scripts/…`.
-3. En Claude, abre el apartado de Skills de la personalización ([claude.ai/customize/skills](https://claude.ai/customize/skills)), súbela y actívala.
+En claude.ai o en la aplicación de escritorio:
+
+1. Abre **Personalización** y, dentro, **Plugins**.
+2. Pulsa **Añadir** y elige **Añadir marketplace**.
+3. Elige **Añadir desde un repositorio**, escribe `katasavyuk-pixel/skills-negocio-pequeno` y pulsa **Sincronizar**.
+4. El plugin aparece en la lista. Pulsa **Añadir**.
+
+Las seis quedan en tu cuenta. Se usan escribiendo `/` en un chat y eligiendo una, por ejemplo `/empezar`, o describiendo la tarea. Probado el 13 de octubre de 2026 en claude.ai, en español.
+
+También se puede subir una sola skill en un ZIP (la carpeta dentro del ZIP, no los ficheros sueltos) desde el apartado **Skills** de la personalización. Ese camino no lo he probado.
 
 Hace falta Python 3.9 o posterior donde se ejecuten los scripts. Las aplicaciones de Claude traen el suyo; en tu equipo, compruébalo con `python3 --version`.
 
@@ -102,10 +109,11 @@ Valen para el territorio común. En el País Vasco, Navarra, Canarias, Ceuta y M
 
 ## Estado
 
-- **Versión 2.0.0, nueva.** La 1.x eran ocho skills de solo instrucciones; esta las sustituye.
+- **Versión 2.0.1.** La 2.0 es nueva: sustituye a las ocho skills de solo instrucciones de la 1.x. La 2.0.1 arregla la instalación desde la aplicación de Claude.
 - **Pruebas de los scripts**: en Python 3.9 y 3.13, en cada cambio. Comparan cada cifra con la cuenta hecha a mano.
 - **Pruebas de las skills**: cada una la ha ejecutado de principio a fin un modelo que no la conocía, sobre un negocio inventado, contestando alguien por el cliente. Lo que falló se corrigió.
-- **Lo que no se ha probado**: su uso en negocios reales, y su instalación dentro de la aplicación de Claude y de Cowork. Si algo no encaja con tu caso, dímelo.
+- **Instalación**: probada desde cero en Claude Code, con `npx skills add` y en la aplicación de Claude (claude.ai), donde la bienvenida se ejecutó en un chat.
+- **Lo que no se ha probado**: su uso en negocios reales, Cowork, y los scripts de las otras cinco dentro de la aplicación de Claude (allí solo se ha ejecutado la bienvenida). Si algo no encaja con tu caso, dímelo.
 - **Fallos conocidos**: en [CHANGELOG.md](CHANGELOG.md).
 
 Si una skill hace algo que no debería, abre una incidencia en este repositorio o escríbeme a info@ianexora.com.

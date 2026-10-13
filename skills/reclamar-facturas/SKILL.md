@@ -4,7 +4,7 @@ description: 'Calcula lo que le deben a un negocio por facturas pagadas tarde, c
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # Reclamar facturas

@@ -1,5 +1,12 @@
 # Cambios
 
+## 2.0.1 · 2026-10-13
+
+- **Corregido**: el repositorio no se podía añadir desde la aplicación de Claude (Personalización > Plugins > Añadir marketplace). El `source` del plugin era `"."`, que Claude Code y `npx skills add` aceptan y la aplicación rechaza con «External plugin sources must be objects with a 'source' field». Ahora es `"./"`. Lo vi al instalarlo allí por primera vez; hasta entonces solo lo había instalado desde la terminal.
+- **Corregido**: la aplicación enseñaba el plugin como «Negocio pequeno». Lleva ya su nombre visible, «Negocio pequeño».
+- **Añadido**: `.github/validar.py` falla si el `source` de un plugin no empieza por `./`.
+- **Añadido**: en el README, cómo instalarlo desde la aplicación de Claude, con los nombres de los menús en español.
+
 ## 2.0.0 · 2026-10-13
 
 Seis skills nuevas sustituyen a las ocho de la 1.x. Aquellas eran solo instrucciones: decían al modelo cómo redactar cosas que ya redacta sin ellas, y tenerlas instaladas no cambiaba nada en un negocio.

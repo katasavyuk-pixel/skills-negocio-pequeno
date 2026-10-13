@@ -41,6 +41,8 @@ Other agents that read Agent Skills:
 npx skills add katasavyuk-pixel/skills-negocio-pequeno
 ```
 
+The Claude app (claude.ai or desktop), no terminal: **Customize > Plugins > Add > Add marketplace**, choose to add from a repository, enter `katasavyuk-pixel/skills-negocio-pequeno`, sync, then add the plugin.
+
 Python 3.9 or later is needed wherever the scripts run.
 
 Every business, person, tax number and account in the worked examples is made up.
@@ -51,6 +53,6 @@ Every business, person, tax number and account in the worked examples is made up
 
 ## Status
 
-Version 2.0.0, new. The scripts are tested on Python 3.9 and 3.13 on every change, each figure against a sum done by hand. Each skill was run end to end by a model that did not know it, on a made-up business. Not yet tested in real businesses, nor installed inside the Claude apps or Cowork.
+Version 2.0.1 (2.0 is new; 2.0.1 fixes installing from the Claude app). The scripts are tested on Python 3.9 and 3.13 on every change, each figure against a sum done by hand. Each skill was run end to end by a model that did not know it, on a made-up business. Installed from scratch in Claude Code, with `npx skills add`, and in the Claude app (Customize > Plugins > Add > Add marketplace), where the welcome skill ran in a chat. Not yet tested in real businesses or in Cowork, and the scripts of the other five have not been run inside the Claude app.
 
 Kata Ivanovych, [kata.ianexora.com](https://kata.ianexora.com). [MIT](LICENSE).

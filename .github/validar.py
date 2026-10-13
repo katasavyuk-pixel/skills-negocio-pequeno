@@ -171,6 +171,18 @@ def main():
     version = plugin["version"]
     if plugin["name"] not in [entrada["name"] for entrada in mercado["plugins"]]:
         error("marketplace.json", "no lista el plugin %r" % plugin["name"])
+    # The Claude app only takes a path inside the repository when it starts with
+    # "./". With "." (which Claude Code and the skills CLI accept) it answers
+    # "External plugin sources must be objects with a 'source' field" and the
+    # marketplace cannot be added. Seen on 13 Oct 2026, with version 2.0.0.
+    for entrada in mercado["plugins"]:
+        origen = entrada.get("source")
+        if isinstance(origen, str) and not origen.startswith("./"):
+            error(
+                "marketplace.json",
+                "el `source` de %r es %r: tiene que empezar por \"./\" o la aplicación de Claude no sincroniza el repositorio"
+                % (entrada["name"], origen),
+            )
     # A top-level bin/ makes the Claude apps refuse the plugin.
     if (REPO / "bin").exists():
         error("repositorio", "una carpeta bin/ en la raíz impide instalar el plugin en las aplicaciones de Claude")
