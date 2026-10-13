@@ -1,0 +1,152 @@
+{
+  "trimestre": "2026-3",
+  "desde": "2026-07-01",
+  "hasta": "2026-09-30",
+  "facturas_emitidas": 9,
+  "facturas_recibidas": 10,
+  "errores": 5,
+  "avisos": 4,
+  "hallazgos": [
+    {
+      "libro": "emitidas",
+      "linea": 3,
+      "factura": "2026-025",
+      "con": "Hotel Mirador",
+      "gravedad": "error",
+      "que": "El NIF B00000011 no es correcto: la letra o el dígito de control no corresponde al número.",
+      "arreglo": "Casi siempre es una errata. Compáralo con el de otra factura del mismo destinatario."
+    },
+    {
+      "libro": "emitidas",
+      "linea": 6,
+      "factura": "2026-029",
+      "con": "Óptica Lumen",
+      "gravedad": "error",
+      "que": "La cuota de IVA (300.00) no corresponde a la base (1500.00) al 21 %: saldrían 315.00.",
+      "arreglo": "Revisa la base, el tipo o la cuota en la factura original."
+    },
+    {
+      "libro": "emitidas",
+      "linea": 7,
+      "factura": "2026-030",
+      "con": "Bar Central",
+      "gravedad": "error",
+      "que": "Falta el NIF del destinatario.",
+      "arreglo": "Es un dato obligatorio de la factura (Real Decreto 1619/2012, art. 6.1.d). Pídelo y corrige la factura."
+    },
+    {
+      "libro": "recibidas",
+      "linea": 10,
+      "factura": "H-220",
+      "con": "Herrajes Sanz",
+      "gravedad": "error",
+      "que": "Esta factura ya está apuntada en la línea 9.",
+      "arreglo": "Quita una de las dos: apuntada dos veces, su IVA se deduciría dos veces."
+    },
+    {
+      "libro": "recibidas",
+      "linea": 11,
+      "factura": "H-231",
+      "con": "Herrajes Sanz",
+      "gravedad": "error",
+      "que": "El total (112.00) no es la suma de bases, IVA y recargo menos la retención: saldrían 121.00.",
+      "arreglo": "Revisa la factura original: falta una línea, sobra una, o el total está mal copiado."
+    },
+    {
+      "libro": "emitidas",
+      "linea": 4,
+      "factura": "2026-027",
+      "con": "Zapatería Paso",
+      "gravedad": "aviso",
+      "que": "Entre la 2026-025 y la 2026-027 falta una factura: 2026-026.",
+      "arreglo": "La numeración de cada serie tiene que ser correlativa (art. 6.1.a). Si esa factura existe, falta en el listado; si se anuló, tiene que constar."
+    },
+    {
+      "libro": "emitidas",
+      "linea": 4,
+      "factura": "2026-027",
+      "con": "Zapatería Paso",
+      "gravedad": "aviso",
+      "que": "La 2026-027 tiene fecha anterior a la 2026-025, que va antes en la numeración.",
+      "arreglo": "Los números tienen que seguir el orden de las fechas. Revisa cuál de las dos fechas está mal."
+    },
+    {
+      "libro": "emitidas",
+      "linea": 11,
+      "factura": "2026-033",
+      "con": "Óptica Lumen",
+      "gravedad": "aviso",
+      "que": "Tiene fecha 02/10/2026, posterior al trimestre.",
+      "arreglo": "Va en el trimestre siguiente: sácala de este."
+    },
+    {
+      "libro": "recibidas",
+      "linea": 12,
+      "factura": "SUB-88",
+      "con": "Software de diseño",
+      "gravedad": "aviso",
+      "que": "El emisor es de fuera de España (IE1234567X).",
+      "arreglo": "Las operaciones con el extranjero tienen sus propias reglas de IVA: sepáralas para quien presenta los impuestos."
+    }
+  ],
+  "posibles_facturas_que_faltan": [
+    "Luz del Ebro tiene factura dos meses del trimestre y no en agosto. ¿Falta esa factura?",
+    "Maderas Aragón tiene factura dos meses del trimestre y no en septiembre. ¿Falta esa factura?"
+  ],
+  "iva_de_las_ventas": {
+    "por_tipo": [
+      {
+        "tipo": "21",
+        "base": "15600.00",
+        "cuota": "3261.00",
+        "recargo": "0.00"
+      },
+      {
+        "tipo": "10",
+        "base": "1200.00",
+        "cuota": "120.00",
+        "recargo": "0.00"
+      }
+    ],
+    "total": "3381.00"
+  },
+  "iva_de_las_compras": {
+    "por_tipo": [
+      {
+        "tipo": "21",
+        "base": "10381.04",
+        "cuota": "2180.01",
+        "recargo": "0.00"
+      },
+      {
+        "tipo": "0",
+        "base": "50.00",
+        "cuota": "0.00",
+        "recargo": "0.00"
+      }
+    ],
+    "total": "2180.01"
+  },
+  "diferencia": "1200.99",
+  "retenciones_que_te_han_practicado": "0.00",
+  "retenciones_que_has_practicado": "683.07",
+  "plazos": [
+    {
+      "que": "IVA del trimestre (modelo 303)",
+      "hasta": "2026-10-20"
+    },
+    {
+      "que": "Pago fraccionado del IRPF de autónomos (modelo 130)",
+      "hasta": "2026-10-20"
+    },
+    {
+      "que": "Retenciones de nóminas y profesionales (modelo 111)",
+      "hasta": "2026-10-20"
+    },
+    {
+      "que": "Retenciones de alquileres (modelo 115)",
+      "hasta": "2026-10-20"
+    }
+  ],
+  "que_es_la_diferencia": "IVA de las ventas menos IVA de las compras del trimestre, tal como están apuntadas. No es la liquidación: quien presenta el modelo decide qué es deducible y aplica lo que aquí no se mira (prorrata, bienes de inversión, regímenes especiales, cuotas a compensar de otros trimestres)."
+}

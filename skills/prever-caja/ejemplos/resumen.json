@@ -1,0 +1,138 @@
+{
+  "fecha_del_saldo": "2026-10-13",
+  "saldo_inicial": "9420.75",
+  "hasta": "2027-01-10",
+  "semanas": 13,
+  "minimo": "8000",
+  "retraso_dias": 14,
+  "escenarios": [
+    {
+      "escenario": "previsto",
+      "saldo_final": "-7004.25",
+      "saldo_mas_bajo": "-7004.25",
+      "semana_del_saldo_mas_bajo": "2026-12-28",
+      "primera_semana_bajo_el_minimo": "2026-10-26",
+      "primera_semana_en_negativo": "2026-12-28",
+      "saldo_al_cierre_de_cada_semana": {
+        "2026-10-13": "12410.75",
+        "2026-10-19": "10200.75",
+        "2026-10-26": "3400.75",
+        "2026-11-02": "2420.75",
+        "2026-11-09": "16300.75",
+        "2026-11-16": "15020.75",
+        "2026-11-23": "16835.75",
+        "2026-11-30": "7135.75",
+        "2026-12-07": "7135.75",
+        "2026-12-14": "2695.75",
+        "2026-12-21": "2695.75",
+        "2026-12-28": "-7004.25",
+        "2027-01-04": "-7004.25"
+      }
+    },
+    {
+      "escenario": "con_retraso",
+      "saldo_final": "-7004.25",
+      "saldo_mas_bajo": "-7004.25",
+      "semana_del_saldo_mas_bajo": "2026-12-28",
+      "primera_semana_bajo_el_minimo": "2026-10-19",
+      "primera_semana_en_negativo": "2026-10-26",
+      "saldo_al_cierre_de_cada_semana": {
+        "2026-10-13": "8780.75",
+        "2026-10-19": "1730.75",
+        "2026-10-26": "-4339.25",
+        "2026-11-02": "-479.25",
+        "2026-11-09": "1780.75",
+        "2026-11-16": "500.75",
+        "2026-11-23": "15020.75",
+        "2026-11-30": "5320.75",
+        "2026-12-07": "7135.75",
+        "2026-12-14": "295.75",
+        "2026-12-21": "295.75",
+        "2026-12-28": "-7004.25",
+        "2027-01-04": "-7004.25"
+      }
+    },
+    {
+      "escenario": "sin_cliente_mayor",
+      "saldo_final": "-25154.25",
+      "saldo_mas_bajo": "-25154.25",
+      "semana_del_saldo_mas_bajo": "2026-12-28",
+      "primera_semana_bajo_el_minimo": "2026-10-19",
+      "primera_semana_en_negativo": "2026-10-26",
+      "saldo_al_cierre_de_cada_semana": {
+        "2026-10-13": "8780.75",
+        "2026-10-19": "6570.75",
+        "2026-10-26": "-229.25",
+        "2026-11-02": "-1209.25",
+        "2026-11-09": "-1849.25",
+        "2026-11-16": "-3129.25",
+        "2026-11-23": "-1314.25",
+        "2026-11-30": "-11014.25",
+        "2026-12-07": "-11014.25",
+        "2026-12-14": "-15454.25",
+        "2026-12-21": "-15454.25",
+        "2026-12-28": "-25154.25",
+        "2027-01-04": "-25154.25"
+      }
+    }
+  ],
+  "mayores_pagos_de_las_semanas_clave": {
+    "2026-10-19": [
+      {
+        "concepto": "Proveedor de tablero",
+        "importe": "3900.00",
+        "fecha": "2026-10-25"
+      },
+      {
+        "concepto": "IVA 3T modelo 303",
+        "importe": "3150.00",
+        "fecha": "2026-10-20"
+      }
+    ],
+    "2026-10-26": [
+      {
+        "concepto": "Nóminas",
+        "importe": "6200.00",
+        "fecha": "2026-10-31"
+      },
+      {
+        "concepto": "Seguridad Social",
+        "importe": "2050.00",
+        "fecha": "2026-10-31"
+      },
+      {
+        "concepto": "Alquiler del taller",
+        "importe": "1450.00",
+        "fecha": "2026-11-01"
+      }
+    ],
+    "2026-12-28": [
+      {
+        "concepto": "Nóminas",
+        "importe": "6200.00",
+        "fecha": "2026-12-31"
+      },
+      {
+        "concepto": "Seguridad Social",
+        "importe": "2050.00",
+        "fecha": "2026-12-31"
+      },
+      {
+        "concepto": "Alquiler del taller",
+        "importe": "1450.00",
+        "fecha": "2027-01-01"
+      }
+    ]
+  },
+  "cliente_mayor": {
+    "nombre": "Hotel Mirador",
+    "importe": "18150.00",
+    "cobros": 2,
+    "parte_de_los_cobros": "60 %"
+  },
+  "cobros_vencidos": "3630.00",
+  "avisos": [
+    "Hay 1 cobro ya vencido por 3.630,00 €. La previsión supone que entra esta semana; si no es seguro, es dinero que hay que reclamar, no contar.",
+    "Hotel Mirador es el 60 % de todo lo que se espera cobrar en el periodo (18.150,00 € en 2 cobros)."
+  ]
+}

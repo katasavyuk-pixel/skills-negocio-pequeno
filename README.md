@@ -1,0 +1,119 @@
+# Skills para llevar un negocio pequeño con Claude
+
+Seis skills en español que hacen trabajo de oficina de un negocio pequeño y dejan un fichero hecho: lo que te deben con los intereses que la ley añade, la semana en que la caja se queda corta, las facturas del trimestre revisadas antes de mandarlas a la gestoría.
+
+Empiezan por una bienvenida que pregunta por tu negocio una vez, lo guarda, y hace que las demás trabajen con tus datos y no con un ejemplo genérico.
+
+[English summary](README.en.md)
+
+## Qué hay
+
+| Skill | Qué entrega | Cuándo se usa |
+| --- | --- | --- |
+| [`empezar`](skills/empezar/SKILL.md) | El perfil de tu negocio en un fichero, y por dónde empezar. | La primera vez. |
+| [`reclamar-facturas`](skills/reclamar-facturas/SKILL.md) | Una hoja con cada factura vencida, sus intereses de demora y los 40 € por factura que añade la ley, y el borrador de la reclamación que toca a cada cliente. | Cada semana, o cuando un cliente no paga. |
+| [`prever-caja`](skills/prever-caja/SKILL.md) | Una hoja con trece semanas de caja y tres escenarios: en qué semana te quedas corto y de qué cliente dependes. | Una vez al mes, o antes de un gasto grande. |
+| [`cerrar-trimestre`](skills/cerrar-trimestre/SKILL.md) | Una hoja con los errores de las facturas del trimestre, el IVA por tipo y los plazos. | Al acabar marzo, junio, septiembre y diciembre. |
+| [`visibilidad-en-ia`](skills/visibilidad-en-ia/SKILL.md) | Una hoja con nueve comprobaciones de si un asistente de IA puede encontrar y leer tu web, y a quién pedirle cada arreglo. | Antes y después de tocar la web. |
+| [`datos-de-documentos`](skills/datos-de-documentos/SKILL.md) | Una tabla con los datos de tus facturas, pedidos o correos, cada uno con el trozo del documento del que sale. | Cuando copias datos a mano. |
+
+## Qué se ve al usarlas
+
+Lo que sale con los datos de ejemplo que trae cada skill. Son inventados; las cuentas, no.
+
+- **`reclamar-facturas`**: 15.605,00 € pendientes en cuatro facturas, y 417,86 € más que la ley añade y que nadie había reclamado. Una factura «a 90 días» resulta llevar 44 días de retraso y no 14, porque la ley no admite plazos de más de 60.
+- **`prever-caja`**: con 9.420,75 € en la cuenta, la caja baja del mínimo en dos semanas y entra en negativo a final de diciembre. El 60 % de lo que se espera cobrar depende de un solo cliente.
+- **`cerrar-trimestre`**: en diecinueve facturas, cinco errores y dos facturas que faltan, encontrados antes de mandarlas a la gestoría.
+- **`datos-de-documentos`**: de cuatro documentos, quita un total que se había sumado en vez de leerse y un IBAN que no estaba en el correo, y avisa de que dos son la misma factura.
+- **`visibilidad-en-ia`**: en la web simulada de sus pruebas, ninguna de las nueve comprobaciones sale bien. Entre lo que encuentra: un rastreador con acceso a lo que estaba cerrado para los demás, una página que llega vacía si no se ejecuta JavaScript y un negocio que se llama de dos formas.
+
+## Cómo funcionan
+
+Las seis están hechas igual:
+
+1. **Leen el perfil del negocio**, `perfil-negocio.md`, que crea `empezar`: a qué te dedicas, a quién vendes, cómo cobras, de tú o de usted. Si no existe, preguntan solo lo que necesitan.
+2. **El modelo reúne y explica; un script hace lo que no se puede dejar a ojo.** Las sumas, los intereses, las comprobaciones de un NIF o de un total las hace un programa corto, siempre igual. El modelo no calcula.
+3. **Dejan un fichero**: una hoja de Excel que se abre en cualquier programa, y un resumen corto que empieza por la respuesta.
+4. **No envían nada ni presentan nada.** Dejan borradores y hojas. Lo manda quien lleva el negocio.
+
+## Antes de instalar nada, léelas
+
+Una skill es un conjunto de instrucciones que Claude sigue cuando la tarea encaja. Estas llevan además scripts en Python, y conviene saber qué hacen antes de dejarlos correr en tu equipo:
+
+- Usan **solo la biblioteca estándar** de Python. No instalan nada.
+- **No abren conexiones**, con una excepción: `visibilidad-en-ia` descarga las páginas públicas de la web que le digas, y ninguna otra.
+- **No borran ni envían nada.** Leen los ficheros que les das y escriben las hojas.
+- Son cortos y están comentados. Cada skill tiene los suyos en su carpeta `scripts/`.
+
+Nada de esto hay que creérselo: [`.github/validar.py`](.github/validar.py) lo comprueba en cada cambio, y falla si un script importa algo de red o lanza otro programa sin que su skill esté en la lista con el motivo.
+
+## Instalar
+
+### En Claude Code
+
+```
+/plugin marketplace add katasavyuk-pixel/skills-negocio-pequeno
+/plugin install negocio-pequeno@kata-ivanovych
+```
+
+Quedan disponibles como `/negocio-pequeno:empezar`, `/negocio-pequeno:reclamar-facturas` y así con las demás. También se activan solas cuando lo que pides encaja con su descripción.
+
+### En otros agentes compatibles con Agent Skills
+
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno
+```
+
+### En la aplicación de Claude, una a una
+
+1. Descarga la carpeta de la skill que quieras, por ejemplo `skills/reclamar-facturas`, entera.
+2. Comprímela en un ZIP de forma que dentro quede la carpeta: `reclamar-facturas/SKILL.md`, `reclamar-facturas/scripts/…`.
+3. En Claude, abre el apartado de Skills de la personalización ([claude.ai/customize/skills](https://claude.ai/customize/skills)), súbela y actívala.
+
+Hace falta Python 3.9 o posterior donde se ejecuten los scripts. Las aplicaciones de Claude traen el suyo; en tu equipo, compruébalo con `python3 --version`.
+
+## Por dónde empezar
+
+Escribe «quiero empezar». La bienvenida hace nueve preguntas en tres tandas, unos tres minutos, guarda las respuestas en `perfil-negocio.md` y te dice cuál de las otras usar primero. El perfil es un fichero de texto tuyo: se puede abrir y cambiar.
+
+Si prefieres ir directo a una, también vale: te preguntará lo que le falte.
+
+Cada skill trae un ejemplo resuelto en su carpeta `ejemplos/`. Todos los negocios, personas, NIF y cuentas que aparecen en ellos son inventados.
+
+## Lo que hacen y lo que no
+
+- **No envían nada.** Los correos y las cartas se quedan en borrador.
+- **No presentan impuestos ni rellenan modelos.** Dejan los libros revisados para quien lo hace.
+- **No inventan.** Un importe que no se sabe no se pone a cero: se deja fuera y se dice. Un dato que no está en el documento se deja vacío.
+- **No son asesoría jurídica ni fiscal.** Calculan con las normas que citan y lo dicen. Antes de ir a un juzgado o de presentar una declaración, que lo vea quien corresponde.
+- **No prometen resultados.** Dicen lo que se puede reclamar, no que se vaya a cobrar; que una web se puede leer, no que la vayan a recomendar.
+
+## Lo legal y lo fiscal
+
+`reclamar-facturas` y `cerrar-trimestre` aplican normas españolas. Cada cifra y cada regla lleva su artículo, y todo se leyó en el texto consolidado del BOE el **13 de octubre de 2026**:
+
+- El tipo legal de interés de demora de cada semestre, desde el segundo de 2021, con la resolución de la que sale.
+- La Ley 3/2004 (plazos de pago, intereses y compensación), la Ley Orgánica 1/2025 (negociación previa a un juicio) y los artículos del proceso monitorio.
+- El Reglamento de facturación (Real Decreto 1619/2012) y los tipos de IVA y de recargo de equivalencia.
+
+Las normas cambian. Si usas esto mucho después de esa fecha, compruébalo. Cuando falta el tipo de un semestre, el script se para y dice cómo buscarlo: no calcula con uno supuesto.
+
+Valen para el territorio común. En el País Vasco, Navarra, Canarias, Ceuta y Melilla cambian impuestos, modelos y plazos, y las skills avisan de lo que no cubren.
+
+## Estado
+
+- **Versión 2.0.0, nueva.** La 1.x eran ocho skills de solo instrucciones; esta las sustituye.
+- **Pruebas de los scripts**: en Python 3.9 y 3.13, en cada cambio. Comparan cada cifra con la cuenta hecha a mano.
+- **Pruebas de las skills**: cada una la ha ejecutado de principio a fin un modelo que no la conocía, sobre un negocio inventado, contestando alguien por el cliente. Lo que falló se corrigió.
+- **Lo que no se ha probado**: su uso en negocios reales, y su instalación dentro de la aplicación de Claude y de Cowork. Si algo no encaja con tu caso, dímelo.
+- **Fallos conocidos**: en [CHANGELOG.md](CHANGELOG.md).
+
+Si una skill hace algo que no debería, abre una incidencia en este repositorio o escríbeme a info@ianexora.com.
+
+## Quién las hace
+
+Soy Kata Ivanovych. Documento en [kata.ianexora.com](https://kata.ianexora.com) los sistemas de IA que pongo en marcha en un negocio pequeño: qué hacen, sus números y lo que se rompió.
+
+## Licencia
+
+[MIT](LICENSE). Puedes usarlas, cambiarlas y adaptarlas a tu negocio o al de tus clientes.

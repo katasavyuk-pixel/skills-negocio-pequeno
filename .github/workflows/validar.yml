@@ -1,0 +1,34 @@
+name: Validar
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  formato:
+    name: Las skills se pueden instalar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet pyyaml
+      - run: python3 .github/validar.py
+
+  scripts:
+    name: Los scripts hacen bien las cuentas (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 3.9 is what a stock macOS ships; the newest is what the Claude apps tend to run.
+        python: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      # Only the tests use it, to read back the workbooks the scripts write. The scripts themselves need nothing.
+      - run: pip install --quiet openpyxl
+      - run: python -m unittest discover -s tests -v

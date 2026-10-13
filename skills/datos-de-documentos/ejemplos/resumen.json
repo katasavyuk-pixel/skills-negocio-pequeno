@@ -1,0 +1,36 @@
+{
+  "documentos": 4,
+  "filas": 4,
+  "campos_por_documento": 8,
+  "datos_rellenos": 28,
+  "datos_vacios": 4,
+  "datos_vaciados_por_no_poder_comprobarse": 2,
+  "para_revisar": 4,
+  "documentos_sin_nada_que_revisar": 1,
+  "revisar": [
+    {
+      "documento": "factura-herrajes.txt",
+      "campo": "total",
+      "valor": "1280.00",
+      "motivo": "esa cifra no está en el fragmento citado: el dato se ha vaciado"
+    },
+    {
+      "documento": "correo-luz.txt",
+      "campo": "nif",
+      "valor": "A00777770",
+      "motivo": "el NIF está en el documento, pero su letra o dígito de control no corresponde: puede estar mal en el propio documento"
+    },
+    {
+      "documento": "correo-luz.txt",
+      "campo": "iban",
+      "valor": "ES8200000000000000000000",
+      "motivo": "ese número no está en el fragmento citado: el dato se ha vaciado"
+    },
+    {
+      "documento": "correo-maderas-reenviado.txt",
+      "campo": "nif",
+      "valor": "A00555557",
+      "motivo": "coincide en nif y numero con factura-maderas.txt: puede ser el mismo documento dos veces"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+cliente,numero,fecha_factura,vencimiento,importe,tipo_cliente,avisos,base
+Hotel Mirador,2026-019,2026-04-10,2026-06-09,7260.00,empresa,2,6000.00
+Hotel Mirador,2026-031,2026-08-29,2026-09-28,3630.00,empresa,1,3000.00
+Zapatería Paso,2026-027,2026-07-01,2026-09-29,1815.00,empresa,0,1500.00
+Óptica Lumen,2026-034,2026-09-20,2026-10-20,4840.00,empresa,0,4000.00
+Familia Aranda,2026-036,2026-08-30,,2900.00,particular,1,
+Ayuntamiento de Villaejemplo,2026-022,2026-05-04,2026-06-03,1210.00,administracion,0,1000.00

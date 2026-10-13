@@ -1,0 +1,57 @@
+{
+  "campos": [
+    {
+      "nombre": "proveedor",
+      "tipo": "texto",
+      "obligatorio": true
+    },
+    {
+      "nombre": "nif",
+      "tipo": "nif",
+      "obligatorio": true
+    },
+    {
+      "nombre": "numero",
+      "tipo": "texto",
+      "obligatorio": true
+    },
+    {
+      "nombre": "fecha",
+      "tipo": "fecha",
+      "obligatorio": true
+    },
+    {
+      "nombre": "base",
+      "tipo": "importe",
+      "obligatorio": false
+    },
+    {
+      "nombre": "iva",
+      "tipo": "importe",
+      "obligatorio": false
+    },
+    {
+      "nombre": "total",
+      "tipo": "importe",
+      "obligatorio": true
+    },
+    {
+      "nombre": "iban",
+      "tipo": "iban",
+      "obligatorio": false
+    }
+  ],
+  "sumas": [
+    {
+      "total": "total",
+      "sumandos": [
+        "base",
+        "iva"
+      ]
+    }
+  ],
+  "clave": [
+    "nif",
+    "numero"
+  ]
+}

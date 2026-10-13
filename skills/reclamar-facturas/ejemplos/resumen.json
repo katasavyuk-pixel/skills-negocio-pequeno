@@ -1,0 +1,156 @@
+{
+  "calculado_a": "2026-10-13",
+  "tipos_comprobados_el": "2026-10-13",
+  "facturas_vencidas": 4,
+  "facturas_no_vencidas": 1,
+  "pendiente": "15605.00",
+  "intereses_de_demora": "297.86",
+  "compensacion_por_costes_de_cobro": "120.00",
+  "total_a_reclamar": "16022.86",
+  "lo_que_la_ley_anade_al_importe": "417.86",
+  "intereses_si_se_calculan_sin_iva": "246.18",
+  "por_cliente": [
+    {
+      "cliente": "Hotel Mirador",
+      "facturas": 2,
+      "pendiente": "10890.00",
+      "intereses": "275.11",
+      "compensacion": "80.00",
+      "total": "11245.11",
+      "intereses_si_se_calculan_sin_iva": "227.37",
+      "pendiente_en_dos_pagos": [
+        "5445.00",
+        "5445.00"
+      ],
+      "mayor_retraso_dias": 126,
+      "fase": 3,
+      "que_toca": "requerimiento formal con propuesta de acuerdo"
+    },
+    {
+      "cliente": "Familia Aranda",
+      "facturas": 1,
+      "pendiente": "2900.00",
+      "intereses": "0.00",
+      "compensacion": "0.00",
+      "total": "2900.00",
+      "intereses_si_se_calculan_sin_iva": null,
+      "pendiente_en_dos_pagos": [
+        "1450.00",
+        "1450.00"
+      ],
+      "mayor_retraso_dias": 14,
+      "fase": 2,
+      "que_toca": "reclamación con intereses"
+    },
+    {
+      "cliente": "Zapatería Paso",
+      "facturas": 1,
+      "pendiente": "1815.00",
+      "intereses": "22.75",
+      "compensacion": "40.00",
+      "total": "1877.75",
+      "intereses_si_se_calculan_sin_iva": "18.81",
+      "pendiente_en_dos_pagos": [
+        "907.50",
+        "907.50"
+      ],
+      "mayor_retraso_dias": 44,
+      "fase": 2,
+      "que_toca": "reclamación con intereses"
+    }
+  ],
+  "facturas": [
+    {
+      "cliente": "Hotel Mirador",
+      "numero": "2026-019",
+      "estado": "vencida",
+      "vencimiento_legal": "2026-06-09",
+      "dias_de_retraso": 126,
+      "pendiente": "7260.00",
+      "intereses": "259.60",
+      "compensacion": "40.00",
+      "total": "7559.60",
+      "fase": 3,
+      "notas": []
+    },
+    {
+      "cliente": "Zapatería Paso",
+      "numero": "2026-027",
+      "estado": "vencida",
+      "vencimiento_legal": "2026-08-30",
+      "dias_de_retraso": 44,
+      "pendiente": "1815.00",
+      "intereses": "22.75",
+      "compensacion": "40.00",
+      "total": "1877.75",
+      "fase": 2,
+      "notas": [
+        "El vencimiento pactado (29/09/2026) pasa de los 60 días que admite la ley: el retraso se cuenta desde el 30/08/2026 (art. 4.3)."
+      ]
+    },
+    {
+      "cliente": "Hotel Mirador",
+      "numero": "2026-031",
+      "estado": "vencida",
+      "vencimiento_legal": "2026-09-28",
+      "dias_de_retraso": 15,
+      "pendiente": "3630.00",
+      "intereses": "15.51",
+      "compensacion": "40.00",
+      "total": "3685.51",
+      "fase": 2,
+      "notas": []
+    },
+    {
+      "cliente": "Familia Aranda",
+      "numero": "2026-036",
+      "estado": "vencida, sin intereses de esta ley",
+      "vencimiento_legal": "2026-09-29",
+      "dias_de_retraso": 14,
+      "pendiente": "2900.00",
+      "intereses": "0.00",
+      "compensacion": "0.00",
+      "total": "2900.00",
+      "fase": 2,
+      "notas": [
+        "Sin vencimiento en la factura: se usa el plazo habitual de 30 días.",
+        "El cliente es un particular: la Ley 3/2004 no se aplica (art. 3.2.a). Se reclama el importe, sin estos intereses ni los 40 €."
+      ]
+    },
+    {
+      "cliente": "Ayuntamiento de Villaejemplo",
+      "numero": "2026-022",
+      "estado": "vencida, caso aparte",
+      "vencimiento_legal": "2026-06-03",
+      "dias_de_retraso": 132,
+      "pendiente": "1210.00",
+      "intereses": "0.00",
+      "compensacion": "0.00",
+      "total": "0.00",
+      "fase": null,
+      "notas": [
+        "El cliente es una Administración: tiene plazos y trámite propios. Aquí no se calcula; se reclama por su procedimiento."
+      ]
+    },
+    {
+      "cliente": "Óptica Lumen",
+      "numero": "2026-034",
+      "estado": "no vencida",
+      "vencimiento_legal": "2026-10-20",
+      "dias_de_retraso": 0,
+      "pendiente": "4840.00",
+      "intereses": "0.00",
+      "compensacion": "0.00",
+      "total": "0.00",
+      "fase": null,
+      "notas": [
+        "Vence el 20/10/2026: todavía no hay retraso."
+      ]
+    }
+  ],
+  "avisos": [
+    "Hay facturas de particulares: se reclama su importe, pero la ley de morosidad entre empresas no les añade intereses ni compensación.",
+    "Hay facturas a una Administración vencidas: no se han calculado. Tienen su propio procedimiento.",
+    "Los intereses están calculados sobre el importe con IVA. Hay tribunales que los calculan sobre la base sin IVA: es la cifra prudente si se va a juicio."
+  ]
+}
