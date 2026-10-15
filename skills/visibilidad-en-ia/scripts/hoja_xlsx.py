@@ -2,7 +2,7 @@
 
 A skill of this catalogue has to leave a file the owner of a business can open,
 and it has to run wherever the skill is installed: a laptop with a bare Python,
-or the sandbox of the Claude apps. So there is no openpyxl here, on purpose.
+or the sandbox an agent runs its commands in. So there is no openpyxl here, on purpose.
 This writes the handful of XML parts a workbook needs and nothing else: text,
 numbers, dates, a bold header that stays in view, euro and percentage formats,
 bold total rows and column widths.
