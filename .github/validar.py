@@ -14,6 +14,10 @@ What this guards, and why each rule exists:
   network or start other programs unless the skill is listed in `RED` with the
   reason. The README promises exactly that, so it is checked here.
 - The files several skills share are byte-identical to `comun/`.
+- The install commands in both READMEs name the repository, the plugin and
+  the marketplace as the manifests do, and the READMEs state the version.
+  Claude Code and Codex install from the same `.claude-plugin/` manifests
+  with `negocio-pequeno@kata-ivanovych`; a rename there breaks both commands.
 
 Usage: python3 .github/validar.py
 """
@@ -52,6 +56,11 @@ STDLIB_PERMITIDA = {
     "statistics", "string", "sys", "textwrap", "time", "typing", "unicodedata", "xml", "zipfile",
 }
 LLAMADAS_PROHIBIDAS = {"eval", "exec", "compile", "__import__"}
+# Where each README states the version, written as it reads there.
+VERSION_EN_README = {"README.md": "**Versión %s.**", "README.en.md": "Version %s "}
+# The install commands a README shows: what they install from, and what they install.
+ORIGEN_EN_README = re.compile(r"(?:/plugin marketplace add|codex plugin marketplace add|npx skills add) ([\w.-]+/[\w.-]+)")
+PLUGIN_EN_README = re.compile(r"(?:/plugin install|codex plugin add) (\S+)")
 ENLACE = re.compile(r"\]\(([^)#\s]+)(?:#[^)]*)?\)")
 
 errores = []
@@ -165,6 +174,28 @@ def revisar_script(nombre, script):
                     error(donde, "llama a `os.%s`" % funcion.attr)
 
 
+def revisar_readmes(plugin, mercado, version):
+    """The READMEs install what the manifests publish, and say which version it is."""
+    repositorio = re.sub(r"^https://github\.com/|\.git$", "", plugin.get("repository", ""))
+    selector = "%s@%s" % (plugin["name"], mercado["name"])
+    for nombre, plantilla in VERSION_EN_README.items():
+        texto = (REPO / nombre).read_text(encoding="utf-8")
+        if plantilla % version not in texto:
+            error(nombre, "no dice la versión %s (busca %r)" % (version, plantilla % version))
+        origenes = ORIGEN_EN_README.findall(texto)
+        if not origenes:
+            error(nombre, "no enseña cómo instalar desde el repositorio")
+        for origen in sorted(set(origenes)):
+            if origen != repositorio:
+                error(nombre, "instala desde %s; el repositorio es %s" % (origen, repositorio))
+        for orden, agente in (("/plugin install ", "Claude Code"), ("codex plugin add ", "Codex")):
+            if orden not in texto:
+                error(nombre, "no enseña cómo instalarlo en %s" % agente)
+        for elegido in sorted(set(PLUGIN_EN_README.findall(texto))):
+            if elegido != selector:
+                error(nombre, "instala %s; el plugin publicado es %s" % (elegido, selector))
+
+
 def main():
     plugin = json.loads((REPO / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
     mercado = json.loads((REPO / ".claude-plugin/marketplace.json").read_text(encoding="utf-8"))
@@ -183,6 +214,7 @@ def main():
                 "el `source` de %r es %r: tiene que empezar por \"./\" o la aplicación de Claude no sincroniza el repositorio"
                 % (entrada["name"], origen),
             )
+    revisar_readmes(plugin, mercado, version)
     # A top-level bin/ makes the Claude apps refuse the plugin.
     if (REPO / "bin").exists():
         error("repositorio", "una carpeta bin/ en la raíz impide instalar el plugin en las aplicaciones de Claude")
