@@ -1,5 +1,16 @@
 # Cambios
 
+## 2.1.0 · 2026-10-15
+
+Las skills ya no son solo para Claude: se instalan y se usan en Codex, en OpenCode y en cualquier agente que lea el formato Agent Skills. Las skills no cambian; cambia cómo se instalan y lo que lo explica.
+
+- **Añadido**: en el README, cómo instalarlas en cada agente: la aplicación de Claude, Claude Code, Codex, OpenCode, Antigravity, Gemini CLI, Cursor, GitHub Copilot y cualquier otro compatible. Cada apartado dice si está probado o sale de la documentación del agente.
+- **Probado**: Codex se instala desde el mismo marketplace que Claude Code (`codex plugin marketplace add` y `codex plugin add negocio-pequeno@kata-ivanovych`), sin un manifiesto propio, y también con `npx skills add … -a codex`; OpenCode, con `npx skills add … -a opencode`. En los dos, `prever-caja` hizo su hoja con los datos de ejemplo; en Codex, `empezar` dio la bienvenida, escribió el perfil y lo validó. Antigravity, Gemini CLI, Cursor y GitHub Copilot no los he probado.
+- **Aviso**: en Codex, `visibilidad-en-ia` no llega a la web con el sandbox por defecto, que no tiene red. El script lo dice y no da ningún resultado. Para esa auditoría, Codex se arranca con `-c sandbox_workspace_write.network_access=true`.
+- **Añadido**: `.github/validar.py` falla si los comandos de instalación de un README no coinciden con el repositorio, el plugin y el marketplace publicados, o si el README no dice la versión.
+- **Corregido**: la página del plugin apuntaba a `kata.ianexora.com/sistemas`. Ahora apunta a `kata.ianexora.com/marketplace`.
+- **Cambiado**: un comentario de `hoja_xlsx.py` hablaba solo del sandbox de las aplicaciones de Claude.
+
 ## 2.0.1 · 2026-10-13
 
 - **Corregido**: el repositorio no se podía añadir desde la aplicación de Claude (Personalización > Plugins > Añadir marketplace). El `source` del plugin era `"."`, que Claude Code y `npx skills add` aceptan y la aplicación rechaza con «External plugin sources must be objects with a 'source' field». Ahora es `"./"`. Lo vi al instalarlo allí por primera vez; hasta entonces solo lo había instalado desde la terminal.

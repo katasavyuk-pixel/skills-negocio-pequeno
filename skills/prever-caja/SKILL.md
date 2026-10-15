@@ -4,7 +4,7 @@ description: 'Proyecta la caja de un negocio semana a semana durante un trimestr
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.0.1"
+  version: "2.1.0"
 ---
 
 # Prever la caja

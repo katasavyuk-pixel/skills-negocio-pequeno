@@ -1,7 +1,7 @@
 {
   "name": "negocio-pequeno",
   "displayName": "Negocio pequeño",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Seis skills en español para el trabajo de oficina de un negocio pequeño: reclamar facturas con los intereses que añade la ley, prever la caja, revisar el trimestre, auditar la web para la IA y pasar documentos a una tabla. Se adaptan a cada negocio con una bienvenida.",
   "author": {
     "name": "Kata Ivanovych",

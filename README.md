@@ -180,7 +180,7 @@ Valen para el territorio común. En el País Vasco, Navarra, Canarias, Ceuta y M
 
 ## Estado
 
-- **Versión 2.0.1.** La 2.0 es nueva: sustituye a las ocho skills de solo instrucciones de la 1.x. La 2.0.1 arregla la instalación desde la aplicación de Claude.
+- **Versión 2.1.0.** La 2.0 es nueva: sustituye a las ocho skills de solo instrucciones de la 1.x. La 2.0.1 arregla la instalación desde la aplicación de Claude. La 2.1 explica cómo instalarlas en Codex, OpenCode y los demás agentes compatibles con Agent Skills.
 - **Pruebas de los scripts**: en Python 3.9 y 3.13, en cada cambio. Comparan cada cifra con la cuenta hecha a mano.
 - **Pruebas de las skills**: cada una la ha ejecutado de principio a fin un modelo que no la conocía, sobre un negocio inventado, contestando alguien por el cliente. Lo que falló se corrigió.
 - **Instalación**: probada desde cero en Claude Code, con `npx skills add` y en la aplicación de Claude (claude.ai) el 13 de octubre de 2026, donde la bienvenida se ejecutó en un chat; y en Codex y OpenCode el 15 de octubre, donde `prever-caja` hizo su hoja y, en Codex, `empezar` escribió y validó un perfil.

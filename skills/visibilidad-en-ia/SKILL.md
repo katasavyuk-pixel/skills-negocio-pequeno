@@ -4,7 +4,7 @@ description: 'Audita si los asistentes de IA y sus buscadores pueden encontrar y
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.0.1"
+  version: "2.1.0"
 ---
 
 # Visibilidad en IA
