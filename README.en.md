@@ -1,8 +1,10 @@
-# Skills for running a small business with Claude (in Spanish)
+# Skills for running a small business with AI (in Spanish)
 
 Six Agent Skills, written in Spanish for small businesses and freelancers in Spain. Each one does a piece of office work and leaves a file behind: what you are owed including the interest the law adds, the week your cash runs short, the quarter's invoices checked before they go to the accountant.
 
 They start with a welcome that asks about the business once, saves the answers, and makes the other skills work with that business's data instead of a generic example.
+
+They work in the Claude app, Claude Code, Codex, OpenCode and any agent that reads the Agent Skills format: see [Install](#install).
 
 [Versión en español](README.md)
 
@@ -28,22 +30,89 @@ The scripts use the Python standard library only, open no connection (except `vi
 
 ## Install
 
-Claude Code:
+The skills are folders in the open Agent Skills format (`SKILL.md`, references, scripts), so any agent that reads that format can use them. Each section below says whether I tested it or follow the agent's documentation.
+
+Python 3.9 or later is needed wherever the scripts run. The `npx` commands also need Node.js.
+
+### The Claude app (claude.ai or desktop), no terminal
+
+**Customize > Plugins > Add > Add marketplace**, choose to add from a repository, enter `katasavyuk-pixel/skills-negocio-pequeno`, sync, then add the plugin. Tested on 13 October 2026.
+
+### Claude Code
 
 ```
 /plugin marketplace add katasavyuk-pixel/skills-negocio-pequeno
 /plugin install negocio-pequeno@kata-ivanovych
 ```
 
-Other agents that read Agent Skills:
+Tested on 13 October 2026.
+
+### Codex
+
+Codex reads the same marketplace as Claude Code; no extra files:
 
 ```
-npx skills add katasavyuk-pixel/skills-negocio-pequeno
+codex plugin marketplace add katasavyuk-pixel/skills-negocio-pequeno
+codex plugin add negocio-pequeno@kata-ivanovych
 ```
 
-The Claude app (claude.ai or desktop), no terminal: **Customize > Plugins > Add > Add marketplace**, choose to add from a repository, enter `katasavyuk-pixel/skills-negocio-pequeno`, sync, then add the plugin.
+Start a new session after installing. Without the marketplace, with the Agent Skills installer (project `.agents/skills/`; with `-g`, `~/.agents/skills/`):
 
-Python 3.9 or later is needed wherever the scripts run.
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno -a codex
+```
+
+`visibilidad-en-ia` has to reach the website it audits, and Codex's sandbox has no network by default: for that audit, start Codex with `-c sandbox_workspace_write.network_access=true`.
+
+Tested on 15 October 2026 with Codex CLI 0.162.1: both ways, Codex sees the six skills; with the `npx skills` install, `prever-caja` wrote its workbook from the sample data and `empezar` ran the welcome, wrote the profile and validated it with its script.
+
+### OpenCode
+
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno -a opencode
+```
+
+Project `.agents/skills/`; with `-g`, `~/.config/opencode/skills/`. Tested on 15 October 2026 with OpenCode 1.18.35: it sees the six skills, and `prever-caja` wrote its workbook from the sample data.
+
+### Antigravity
+
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno -a antigravity
+```
+
+Project `.agents/skills/`, read by the Antigravity app, IDE and CLI according to its documentation. For all projects, the CLI reads `~/.gemini/antigravity-cli/skills/` (`-a antigravity-cli -g`) and the app and IDE read `~/.gemini/config/skills/` (copy them there). Not tested.
+
+### Gemini CLI
+
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno -a gemini-cli
+```
+
+Project `.agents/skills/`; with `-g`, `~/.gemini/skills/`. Paths from its documentation; not tested.
+
+### Cursor
+
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno -a cursor
+```
+
+Project `.agents/skills/`; with `-g`, `~/.cursor/skills/`. Paths from its documentation; not tested.
+
+### GitHub Copilot
+
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno -a github-copilot
+```
+
+Repository `.agents/skills/`; with `-g`, `~/.copilot/skills/`. According to its documentation, Copilot's cloud agent, the Copilot CLI and agent mode in VS Code and JetBrains read them. Not tested.
+
+### Any other agent that reads Agent Skills
+
+```
+npx skills add katasavyuk-pixel/skills-negocio-pequeno -a AGENT-NAME
+```
+
+The names `-a` accepts are in the installer's [supported agents](https://github.com/vercel-labs/skills#supported-agents). Or copy each skill's whole folder (for example `skills/prever-caja/`, with everything in it) into your agent's skills folder: each folder is self-contained.
 
 Every business, person, tax number and account in the worked examples is made up.
 
@@ -53,6 +122,6 @@ Every business, person, tax number and account in the worked examples is made up
 
 ## Status
 
-Version 2.0.1 (2.0 is new; 2.0.1 fixes installing from the Claude app). The scripts are tested on Python 3.9 and 3.13 on every change, each figure against a sum done by hand. Each skill was run end to end by a model that did not know it, on a made-up business. Installed from scratch in Claude Code, with `npx skills add`, and in the Claude app (Customize > Plugins > Add > Add marketplace), where the welcome skill ran in a chat. Not yet tested in real businesses or in Cowork, and the scripts of the other five have not been run inside the Claude app.
+Version 2.0.1 (2.0 is new; 2.0.1 fixes installing from the Claude app). The scripts are tested on Python 3.9 and 3.13 on every change, each figure against a sum done by hand. Each skill was run end to end by a model that did not know it, on a made-up business. Installed from scratch in Claude Code, with `npx skills add`, and in the Claude app (Customize > Plugins > Add > Add marketplace), where the welcome skill ran in a chat, on 13 October 2026; and in Codex and OpenCode on 15 October, where `prever-caja` wrote its workbook and, in Codex, `empezar` wrote and validated a profile. Not yet tested in real businesses or in Cowork, the scripts of the other five have not been run inside the Claude app, and Antigravity, Gemini CLI, Cursor and GitHub Copilot are documented, not tested.
 
 Kata Ivanovych, [kata.ianexora.com](https://kata.ianexora.com). [MIT](LICENSE).
