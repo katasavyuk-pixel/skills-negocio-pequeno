@@ -72,7 +72,7 @@ También se puede subir una sola skill en un ZIP (la carpeta dentro del ZIP, no 
 
 ```
 /plugin marketplace add katasavyuk-pixel/skills-negocio-pequeno
-/plugin install negocio-pequeno@kata-ivanovych
+/plugin install negocio-pequeno@kata-savyuk
 ```
 
 Quedan disponibles como `/negocio-pequeno:empezar`, `/negocio-pequeno:reclamar-facturas` y así con las demás. También se activan solas cuando lo que pides encaja con su descripción. Probado el 13 de octubre de 2026.
@@ -83,7 +83,7 @@ Codex lee el mismo marketplace que Claude Code, sin ficheros aparte:
 
 ```
 codex plugin marketplace add katasavyuk-pixel/skills-negocio-pequeno
-codex plugin add negocio-pequeno@kata-ivanovych
+codex plugin add negocio-pequeno@kata-savyuk
 ```
 
 Abre una sesión nueva después de instalarlo. Las seis aparecen como `negocio-pequeno:empezar`, `negocio-pequeno:prever-caja` y así con las demás, y se activan solas cuando lo que pides encaja con su descripción.
@@ -191,7 +191,7 @@ Si una skill hace algo que no debería, abre una incidencia en este repositorio 
 
 ## Quién las hace
 
-Soy Kata Ivanovych. Documento en [kata.ianexora.com](https://kata.ianexora.com) los sistemas de IA que pongo en marcha en un negocio pequeño: qué hacen, sus números y lo que se rompió.
+Soy Kata Savyuk. Documento en [kata.ianexora.com](https://kata.ianexora.com) los sistemas de IA que pongo en marcha en un negocio pequeño: qué hacen, sus números y lo que se rompió.
 
 ## Licencia
 

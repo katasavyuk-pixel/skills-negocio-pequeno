@@ -3,7 +3,7 @@ name: prever-caja
 description: 'Proyecta la caja de un negocio semana a semana durante un trimestre y dice en qué semana se queda corto, en una hoja de Excel con tres escenarios. Úsala cuando pidan "previsión de caja", "cómo voy de tesorería", "llego a fin de mes", "puedo pagar las nóminas", "cuánto aguanto", o antes de un gasto grande, una contratación o un trimestre flojo.'
 license: MIT
 metadata:
-  author: Kata Ivanovych
+  author: Kata Savyuk
   version: "2.1.0"
 ---
 

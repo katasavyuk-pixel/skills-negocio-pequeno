@@ -1,8 +1,8 @@
 {
-  "name": "kata-ivanovych",
-  "description": "Skills de Kata Ivanovych, en español, para llevar un negocio pequeño con IA: en Claude, en Codex o en cualquier agente compatible con Agent Skills.",
+  "name": "kata-savyuk",
+  "description": "Skills de Kata Savyuk, en español, para llevar un negocio pequeño con IA: en Claude, en Codex o en cualquier agente compatible con Agent Skills.",
   "owner": {
-    "name": "Kata Ivanovych",
+    "name": "Kata Savyuk",
     "url": "https://kata.ianexora.com"
   },
   "plugins": [

@@ -3,7 +3,7 @@ name: reclamar-facturas
 description: 'Calcula lo que le deben a un negocio por facturas pagadas tarde, con los intereses de demora y los 40 euros por factura que la ley añade, y redacta la reclamación que toca a cada cliente. Úsala cuando pidan "qué facturas tengo sin cobrar", "reclama esta factura", "me pagan tarde", "intereses de demora", "carta de reclamación", "burofax" o "cuánto me deben", y en el repaso semanal de cobros.'
 license: MIT
 metadata:
-  author: Kata Ivanovych
+  author: Kata Savyuk
   version: "2.1.0"
 ---
 

@@ -17,7 +17,7 @@ What this guards, and why each rule exists:
 - The install commands in both READMEs name the repository, the plugin and
   the marketplace as the manifests do, and the READMEs state the version.
   Claude Code and Codex install from the same `.claude-plugin/` manifests
-  with `negocio-pequeno@kata-ivanovych`; a rename there breaks both commands.
+  with `negocio-pequeno@kata-savyuk`; a rename there breaks both commands.
 
 Usage: python3 .github/validar.py
 """

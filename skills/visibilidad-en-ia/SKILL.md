@@ -3,7 +3,7 @@ name: visibilidad-en-ia
 description: 'Audita si los asistentes de IA y sus buscadores pueden encontrar y leer la web de un negocio: nueve comprobaciones con resultado y arreglo, en una hoja de Excel. Úsala cuando pidan "que ChatGPT me recomiende", "no aparezco en la IA", "auditoría GEO", "revisa mi web para la IA", "robots.txt para IA" o "por qué no me encuentran", y antes y después de rehacer una web.'
 license: MIT
 metadata:
-  author: Kata Ivanovych
+  author: Kata Savyuk
   version: "2.1.0"
 ---
 

@@ -3,7 +3,7 @@ name: cerrar-trimestre
 description: 'Revisa las facturas emitidas y recibidas de un trimestre antes de entregarlas a quien presenta los impuestos: encuentra los errores, suma el IVA por tipo y da los plazos, en una hoja de Excel. Úsala cuando pidan "cierra el trimestre", "prepara el IVA", "revisa las facturas del trimestre", "qué le mando a la gestoría", "modelo 303" o "se acerca el día 20", y al acabar marzo, junio, septiembre y diciembre.'
 license: MIT
 metadata:
-  author: Kata Ivanovych
+  author: Kata Savyuk
   version: "2.1.0"
 ---
 

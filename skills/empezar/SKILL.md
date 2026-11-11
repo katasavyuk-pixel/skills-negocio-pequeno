@@ -3,7 +3,7 @@ name: empezar
 description: 'Da la bienvenida y adapta las demás skills a un negocio concreto: pregunta a qué se dedica, a quién vende, cómo cobra y qué quiere resolver primero, y lo guarda en un perfil. Úsala la primera vez, cuando pidan "empezar", "configurar", "adaptar esto a mi negocio", "por dónde empiezo" o "actualizar el perfil", y cuando otra skill no encuentre el perfil del negocio.'
 license: MIT
 metadata:
-  author: Kata Ivanovych
+  author: Kata Savyuk
   version: "2.1.0"
 ---
 

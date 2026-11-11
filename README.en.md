@@ -42,7 +42,7 @@ Python 3.9 or later is needed wherever the scripts run. The `npx` commands also 
 
 ```
 /plugin marketplace add katasavyuk-pixel/skills-negocio-pequeno
-/plugin install negocio-pequeno@kata-ivanovych
+/plugin install negocio-pequeno@kata-savyuk
 ```
 
 Tested on 13 October 2026.
@@ -53,7 +53,7 @@ Codex reads the same marketplace as Claude Code; no extra files:
 
 ```
 codex plugin marketplace add katasavyuk-pixel/skills-negocio-pequeno
-codex plugin add negocio-pequeno@kata-ivanovych
+codex plugin add negocio-pequeno@kata-savyuk
 ```
 
 Start a new session after installing. Without the marketplace, with the Agent Skills installer (project `.agents/skills/`; with `-g`, `~/.agents/skills/`):
@@ -124,4 +124,4 @@ Every business, person, tax number and account in the worked examples is made up
 
 Version 2.1.0 (2.0 is new; 2.0.1 fixes installing from the Claude app; 2.1 documents installing in Codex, OpenCode and other agents that read Agent Skills). The scripts are tested on Python 3.9 and 3.13 on every change, each figure against a sum done by hand. Each skill was run end to end by a model that did not know it, on a made-up business. Installed from scratch in Claude Code, with `npx skills add`, and in the Claude app (Customize > Plugins > Add > Add marketplace), where the welcome skill ran in a chat, on 13 October 2026; and in Codex and OpenCode on 15 October, where `prever-caja` wrote its workbook and, in Codex, `empezar` wrote and validated a profile. Not yet tested in real businesses or in Cowork, the scripts of the other five have not been run inside the Claude app, and Antigravity, Gemini CLI, Cursor and GitHub Copilot are documented, not tested.
 
-Kata Ivanovych, [kata.ianexora.com](https://kata.ianexora.com). [MIT](LICENSE).
+Kata Savyuk, [kata.ianexora.com](https://kata.ianexora.com). [MIT](LICENSE).

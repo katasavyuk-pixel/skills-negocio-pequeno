@@ -3,7 +3,7 @@ name: datos-de-documentos
 description: 'Pasa facturas, pedidos y correos a una tabla revisable, sin inventar ningún dato: cada valor lleva el fragmento del documento del que sale, y lo que no se puede comprobar se deja vacío y se manda a revisar. Úsala cuando pidan "pasa estas facturas a Excel", "saca los datos de estos correos", "apunta estos pedidos", "extrae los datos de este PDF" o cuando alguien copie a mano datos de documentos a una hoja o a un programa.'
 license: MIT
 metadata:
-  author: Kata Ivanovych
+  author: Kata Savyuk
   version: "2.1.0"
 ---
 
