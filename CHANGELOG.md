@@ -11,6 +11,7 @@ Cuatro fallos que salieron al probar las skills con casos de ejemplo de negocios
 - **Corregido** (`visibilidad-en-ia`): si el entorno corta las conexiones sin cifrar, todas las entradas con `http` fallaban y la comprobación 9 decía que la web estaba rota. Cuando todas las de `http` fallan igual y todas las de `https` funcionan, ahora sale «sin comprobar», y se pide abrirla en un navegador.
 - **Corregido** (`reclamar-facturas`): en el transporte de mercancías por carretera, quien paga el porte está en mora a los 30 días (Ley 15/2009, art. 41), no a los 60 de la ley general. Con `--transporte`, el script recorta a 30 días cualquier plazo más largo, lo explica factura a factura y lo cita en la hoja «Base legal».
 - **Añadido**: 26 pruebas, una tanda por fallo, con los casos de ejemplo con los que salieron.
+- **Cambiado**: las pruebas de los scripts corren en `ubuntu-24.04`. `ubuntu-latest` pasó a Ubuntu 26.04 en octubre de 2026 y allí no hay Python 3.9, así que la integración continua fallaba antes de llegar a las pruebas.
 
 ## 2.1.0 · 2026-10-15
 

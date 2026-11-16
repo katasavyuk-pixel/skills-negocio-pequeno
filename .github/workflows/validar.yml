@@ -19,8 +19,10 @@ jobs:
 
   scripts:
     name: Los scripts hacen bien las cuentas (Python ${{ matrix.python }})
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04 in October 2026, and setup-python has no 3.9 for it.
+    runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         # 3.9 is what a stock macOS ships; the newest is what the Claude apps tend to run.
         python: ["3.9", "3.13"]
