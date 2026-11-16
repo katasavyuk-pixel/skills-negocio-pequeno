@@ -145,3 +145,33 @@ class Avisos(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RetencionesDeLaAEAT(unittest.TestCase):
+    """2.1.1: the withholding rates of the AEAT table, not only the professional ones."""
+
+    def autonomo(self, retencion):
+        return cambiar("retencion_irpf", retencion).replace("- forma: sociedad", "- forma: autonomo")
+
+    def test_transportista_en_modulos_con_el_uno_por_ciento(self):
+        # Example case: a one-truck carrier in módulos (IAE 722), whose clients withhold 1 %.
+        codigo, salida, _ = ejecutar(self.autonomo("1"))
+        self.assertEqual(codigo, 0, salida)
+        self.assertIn("PERFIL VÁLIDO", salida)
+
+    def test_agricola_y_alquiler_de_local(self):
+        for retencion in ("2", "19"):
+            codigo, salida, _ = ejecutar(self.autonomo(retencion))
+            self.assertEqual(codigo, 0, salida)
+
+    def test_una_sociedad_que_alquila_un_local_retiene_el_diecinueve_sin_aviso(self):
+        _, salida, _ = ejecutar(cambiar("retencion_irpf", "19"))
+        self.assertNotIn("una sociedad no lleva retención", salida)
+
+    def test_el_uno_por_ciento_en_una_sociedad_avisa(self):
+        _, salida, _ = ejecutar(cambiar("retencion_irpf", "1"))
+        self.assertIn("una sociedad no lleva retención", salida)
+
+    def test_un_tipo_que_no_existe_sigue_sin_valer(self):
+        codigo, salida, _ = ejecutar(self.autonomo("12"))
+        self.assertEqual(codigo, 1, salida)

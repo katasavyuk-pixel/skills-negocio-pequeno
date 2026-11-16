@@ -4,7 +4,7 @@ description: 'Revisa las facturas emitidas y recibidas de un trimestre antes de 
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.1.0"
+  version: "2.1.1"
 ---
 
 # Cerrar el trimestre

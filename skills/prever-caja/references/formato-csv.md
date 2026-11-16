@@ -36,7 +36,7 @@ Escribe el nombre de cada cliente siempre igual: el script agrupa por `tercero` 
 | Factura ya vencida y sin cobrar | Se apunta con su vencimiento real, aunque sea pasado. El script la detecta, la cuenta esta semana y avisa. |
 | Factura con fecha posterior al día del saldo | Es un trabajo sin entregar o un error de fecha: pregunta cuál. Si es un trabajo comprometido, se apunta en su vencimiento. |
 | Venta acordada pero sin facturar (una señal, un presupuesto aceptado) | Se apunta en la fecha que dé la persona, con «previsión» en el concepto, y se nombra en el resumen. |
-| Venta a particulares que se cobra en el momento | No se apunta factura a factura. Una línea por semana o por mes con la venta esperada, y se dice en el resumen de dónde sale esa cifra. |
+| Venta a particulares que se cobra en el momento (mostrador, mesa, sillón) | No se apunta factura a factura. Una línea por semana o por mes con la venta esperada, con `tercero` `mostrador`, y se dice en el resumen de dónde sale esa cifra. No se le pone un nombre de cliente («Clientes sala»): son muchos clientes, y el script no los retrasa ni los toma por el cliente mayor. |
 | Factura de proveedor | `fecha` = el día en que se va a pagar. Importe negativo, con IVA. |
 | Nómina, alquiler, cuota de préstamo | Una sola línea con el próximo cargo y `repite: mensual`. |
 | Impuesto del trimestre con importe conocido | Una línea en su fecha de vencimiento, con el modelo en el concepto (`IVA 3T modelo 303`). |
@@ -56,4 +56,5 @@ Compruébalos tú antes de ejecutar:
 - **El mismo dinero dos veces.** Una factura que está en la lista de pendientes y también, ya cobrada, dentro del saldo. O un gasto fijo apuntado como `mensual` y además como factura de proveedor.
 - **Importes sin IVA.** La lista de facturas de un programa suele traer base e importe total: se usa el total.
 - **Signo cambiado.** Un pago en positivo sube la caja. Repasa que todo lo que sale lleva el signo menos.
+- **Impuestos con el mismo plazo.** En enero, abril, julio y octubre vencen a la vez las retenciones (111, 115) y la declaración trimestral (303, 130). Son pagos distintos: uno no sustituye al otro. Escribe el modelo en el concepto de cada uno.
 - **Cobros que no son seguros.** Un presupuesto sin aceptar no es un cobro y no se apunta.

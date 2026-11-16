@@ -220,3 +220,94 @@ class Ejemplo(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class VentasEnElMomento(unittest.TestCase):
+    """2.1.1: counter and table sales are many small customers, not one big one.
+
+    Example case: a bar with weekly till takings, suppliers and payroll, balance on 16 Nov 2026.
+    """
+
+    BAR = CABECERA + (
+        "2026-11-22,Ventas semana (TPV y efectivo),9800.00,Clientes sala,no\n"
+        "2026-11-29,Ventas semana (TPV y efectivo),9800.00,Clientes sala,no\n"
+        "2026-11-20,Proveedores,-3300.00,Proveedores,no\n"
+        "2026-11-30,Nóminas,-9600.00,Plantilla,no\n"
+    )
+    DIA = ("--saldo", "14200.00", "--fecha", "2026-11-16", "--minimo", "6000", "--semanas", "3")
+
+    def test_antes_un_bar_era_un_solo_cliente_que_dejaba_de_pagar(self):
+        datos = resumen(self.BAR, *self.DIA)
+        self.assertEqual(D(escenario(datos, "sin_cliente_mayor")["saldo_final"]), D("14200") - D("3300") - D("9600"))
+        self.assertNotIn("aplica", escenario(datos, "sin_cliente_mayor"))
+
+    def test_con_cobro_al_momento_no_hay_cliente_mayor_ni_retraso(self):
+        datos = resumen(self.BAR, *self.DIA, "--cobro", "al_momento")
+        previsto = escenario(datos, "previsto")
+        for nombre in ("con_retraso", "sin_cliente_mayor"):
+            otro = escenario(datos, nombre)
+            self.assertIs(otro["aplica"], False)
+            self.assertEqual(otro["saldo_final"], previsto["saldo_final"])
+            self.assertIsNone(otro["primera_semana_en_negativo"])
+        self.assertIsNone(datos["cliente_mayor"])
+        self.assertFalse(any("% de todo lo que se espera cobrar" in aviso for aviso in datos["avisos"]))
+        self.assertTrue(any("Cobras en el momento" in aviso for aviso in datos["avisos"]))
+        self.assertEqual(datos["cobro"], "al_momento")
+
+    def test_en_un_negocio_mixto_el_mostrador_no_se_retrasa_y_la_factura_si(self):
+        csv = CABECERA + (
+            "2026-11-18,Ventas mostrador,500.00,Mostrador,no\n"
+            "2026-11-18,Factura 2026-090,800.00,Hotel Ejemplo,no\n"
+            "2026-11-25,Ventas mostrador,500.00,mostrador,no\n"
+        )
+        datos = resumen(csv, "--saldo", "0", "--fecha", "2026-11-16", "--semanas", "2", "--retraso-dias", "14", "--cobro", "mixto")
+        retraso = escenario(datos, "con_retraso")
+        # The two counter sales stay; the invoice moves 14 days, out of the two weeks.
+        self.assertEqual(D(retraso["saldo_final"]), D("1000.00"))
+        self.assertEqual(datos["cliente_mayor"]["nombre"], "Hotel Ejemplo")
+        self.assertNotIn("aplica", retraso)
+
+    def test_el_libro_dice_que_no_aplica(self):
+        _, desplegados, escenarios, datos = prever.construir(
+            prever.leer_movimientos(self.ruta_del_bar()), D("14200.00"), datetime.date(2026, 11, 16), 3, D("6000"), 14, cobro="al_momento"
+        )
+        libro = prever.hojas(prever.semanas(datetime.date(2026, 11, 16), 3), desplegados, escenarios, datos, D("6000"))
+        semanas = next(h for h in libro if h["nombre"] == "Semanas")["filas"]
+        self.assertTrue(semanas[0][5].endswith("(no aplica)"))
+        self.assertTrue(semanas[0][6].endswith("(no aplica)"))
+        notas = next(h for h in libro if h["nombre"] == "Avisos")["filas"]
+        self.assertTrue(any(str(fila[1]).startswith("No aplica.") for fila in notas))
+
+    def ruta_del_bar(self):
+        ruta = pathlib.Path(tempfile.mkdtemp()) / "movimientos.csv"
+        ruta.write_text(self.BAR, encoding="utf-8")
+        return str(ruta)
+
+
+class ImpuestosDeEnero(unittest.TestCase):
+    """2.1.1: the withholding returns of 20 January do not stand in for the quarterly VAT of 30 January."""
+
+    DIA = ("--saldo", "14200.00", "--fecha", "2026-11-16")
+
+    def avisa(self, datos):
+        return any("30/01/2027" in aviso and "declaración trimestral" in aviso for aviso in datos["avisos"])
+
+    def test_el_111_y_el_115_no_tapan_el_iva_que_falta(self):
+        csv = CABECERA + (
+            "2026-11-22,Ventas semana,9800.00,Mostrador,no\n"
+            "2027-01-20,Retenciones 4T modelo 111,-1900.00,AEAT,no\n"
+            "2027-01-20,Retenciones alquiler 4T modelo 115,-1250.00,AEAT,no\n"
+        )
+        self.assertTrue(self.avisa(resumen(csv, *self.DIA)))
+
+    def test_con_el_303_apuntado_no_avisa(self):
+        csv = CABECERA + (
+            "2026-11-22,Ventas semana,9800.00,Mostrador,no\n"
+            "2027-01-20,Retenciones 4T modelo 111,-1900.00,AEAT,no\n"
+            "2027-01-30,IVA 4T modelo 303,-4100.00,AEAT,no\n"
+        )
+        self.assertFalse(self.avisa(resumen(csv, *self.DIA)))
+
+    def test_un_pago_de_impuestos_sin_modelo_sigue_contando(self):
+        csv = CABECERA + "2026-11-22,Ventas semana,9800.00,Mostrador,no\n2027-01-30,Impuestos del trimestre,-4100.00,Hacienda,no\n"
+        self.assertFalse(self.avisa(resumen(csv, *self.DIA)))

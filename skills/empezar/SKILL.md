@@ -4,7 +4,7 @@ description: 'Da la bienvenida y adapta las demás skills a un negocio concreto:
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.1.0"
+  version: "2.1.1"
 ---
 
 # Empezar

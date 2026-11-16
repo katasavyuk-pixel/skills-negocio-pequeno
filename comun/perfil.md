@@ -44,7 +44,7 @@ Cada dato es una línea `- clave: valor`.
 | `cobro` | `al_momento`, `a_plazo`, `mixto` | Si tiene sentido hablar de facturas vencidas. |
 | `plazo_cobro_dias` | número, o `no_aplica` si cobra en el momento | El plazo pactado habitual, para calcular vencimientos cuando la factura no lo dice. |
 | `iva` | `21`, `10`, `4`, `exento`, `recargo_equivalencia`, `varios`, `igic`, `ipsi` | El tipo habitual, para comprobar facturas y previsiones. |
-| `retencion_irpf` | `no`, `15`, `7` | Si sus facturas llevan retención y cuánta. |
+| `retencion_irpf` | `no`, `15`, `7`, `1`, `2`, `19` | Si sus facturas llevan retención y cuánta. |
 | `caja_minima_eur` | importe | El saldo por debajo del cual hay que avisar. |
 | `facturas_en` | texto | De dónde salen las facturas y en qué formato se pueden exportar. |
 | `banco_exporta` | texto | Cómo se sacan los movimientos del banco. |
