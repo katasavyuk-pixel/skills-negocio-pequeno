@@ -281,33 +281,46 @@ def leer_robots(texto):
 
 
 def grupo_de(grupos, agente):
-    """The group a crawler obeys: the one with its name, or the general one. Never both."""
+    """The rules a crawler obeys: the groups with its name, or else the general ones. Never both.
+
+    Several groups for the same agent are one (RFC 9309, 2.2.1): a WordPress site often has two
+    «User-agent: *» groups, one written by hand and one by its SEO plugin.
+    """
     agente = agente.lower()
-    for grupo in grupos:
-        if agente in grupo["agentes"]:
-            return grupo, True
-    for grupo in grupos:
-        if "*" in grupo["agentes"]:
-            return grupo, False
-    return None, False
+    suyos = [grupo for grupo in grupos if agente in grupo["agentes"]]
+    propio = bool(suyos) and agente != "*"
+    if not suyos:
+        suyos = [grupo for grupo in grupos if "*" in grupo["agentes"]]
+    if not suyos:
+        return None, False
+    if len(suyos) == 1:
+        return suyos[0], propio
+    return {"agentes": sorted({a for grupo in suyos for a in grupo["agentes"]}), "reglas": [regla for grupo in suyos for regla in grupo["reglas"]]}, propio
+
+
+def coincide(patron, ruta):
+    """Whether a robots.txt path pattern matches a path: «*» is any run of characters, a final «$» ends it (RFC 9309, 2.2.3)."""
+    ancla = patron.endswith("$")
+    if ancla:
+        patron = patron[:-1]
+    expresion = ".*".join(re.escape(trozo) for trozo in patron.split("*"))
+    return re.match(expresion + ("$" if ancla else ""), ruta) is not None
 
 
 def cerrado_del_todo(grupo):
-    if grupo is None:
-        return False
-    prohibidas = [ruta for regla, ruta in grupo["reglas"] if regla == "disallow"]
-    permitidas = [ruta for regla, ruta in grupo["reglas"] if regla == "allow"]
-    return "/" in prohibidas and "/" not in permitidas
+    """The whole site is closed: the home page and an ordinary page are both disallowed."""
+    return prohibida(grupo, "/") and prohibida(grupo, "/cualquier-pagina")
 
 
 def prohibida(grupo, ruta):
-    """Longest matching rule wins, as crawlers apply it (wildcards are not expanded: prefixes only)."""
+    """The most specific matching rule wins, and allow wins a tie, as crawlers apply it (RFC 9309, 2.2.2)."""
     if grupo is None:
         return False
     mejor, veredicto = -1, False
     for regla, patron in grupo["reglas"]:
-        patron = patron.split("*", 1)[0].rstrip("$")
-        if patron and ruta.startswith(patron) and len(patron) > mejor:
+        if not patron or not coincide(patron, ruta):
+            continue
+        if len(patron) > mejor or (len(patron) == mejor and regla == "allow"):
             mejor, veredicto = len(patron), regla == "disallow"
     return veredicto
 
@@ -382,7 +395,8 @@ def auditar(web, pedir=pedir, nombre=None, max_paginas=MAX_PAGINAS, pausa=PAUSA_
 
     paginas, cerradas = [], []
     for direccion in declaradas[:max_paginas]:
-        ruta = urllib.parse.urlsplit(direccion).path or "/"
+        trozos = urllib.parse.urlsplit(direccion)
+        ruta = (trozos.path or "/") + ("?" + trozos.query if trozos.query else "")
         if prohibida(general, ruta):
             cerradas.append(direccion)
             continue
@@ -488,7 +502,7 @@ def _tabla_rastreadores(grupos):
         faltan = []
         if propio:
             suyas = {ruta for regla, ruta in grupo["reglas"] if regla == "disallow"}
-            faltan = [ruta for ruta in protegidas if ruta not in suyas and "/" not in suyas]
+            faltan = [ruta for ruta in protegidas if ruta not in suyas and not cerrado_del_todo(grupo)]
         tabla.append({"rastreador": agente, "puede_entrar": not cerrado_del_todo(grupo), "tiene_apartado_propio": propio, "protecciones_que_le_faltan": faltan})
     return tabla
 
@@ -626,6 +640,22 @@ def _entradas(entradas):
     finales = {entrada["final"].rstrip("/") for entrada in entradas if entrada["final"]}
     rotas = [entrada for entrada in entradas if not entrada["final"]]
     ejemplos = ["%s → %s" % (e["url"], e["final"] or e["error"]) for e in entradas]
+    https = [entrada for entrada in entradas if entrada["url"].startswith("https://")]
+    http = [entrada for entrada in entradas if entrada["url"].startswith("http://")]
+    # Every http entry failing the same way while every https one works is what an environment that cuts
+    # plain http looks like (an agent sandbox, a corporate proxy): the audit cannot tell it from the site.
+    if rotas and http and all(not e["final"] for e in http) and https and all(e["final"] for e in https) and len({e["error"] for e in http}) == 1:
+        finales_https = {e["final"].rstrip("/") for e in https}
+        if len(finales_https) > 1:
+            return _comprobacion(9, nombre, FALLO, "Las entradas con «https» acaban en %d direcciones distintas: la web existe duplicada." % len(finales_https), "Elige una dirección y redirige las demás a ella.", ejemplos)
+        return _comprobacion(
+            9,
+            nombre,
+            SIN_COMPROBAR,
+            "Las %d entradas con «https» acaban en %s. Las %d con «http» fallan todas igual (%s): puede ser la web o este entorno, que corta las conexiones sin cifrar. No se cuenta como fallo de la web." % (len(https), next(iter(finales_https)), len(http), http[0]["error"]),
+            "Abre %s en un navegador normal: si no llega a la web con «https», díselo a quien lleva el alojamiento." % http[0]["url"],
+            ejemplos,
+        )
     if rotas:
         return _comprobacion(9, nombre, FALLO, "%d de las %d formas de escribir la dirección no llegan a la web." % (len(rotas), len(entradas)), "Todas (con «http» y con «https», y con y sin «www» si es un dominio principal) tienen que acabar en la misma dirección, con un certificado válido. Suele ser un dominio sin asignar o un certificado caducado: es cosa de quien lleva el alojamiento.", ejemplos)
     if len(finales) > 1:

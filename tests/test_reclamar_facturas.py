@@ -282,3 +282,49 @@ class Ejemplo(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TransportePorCarretera(unittest.TestCase):
+    """2.1.1: road freight is late after 30 days (Ley 15/2009, art. 41), not 60.
+
+    Example case: a carrier's invoice of 20 Aug 2026 written «a 90 días», calculated on 16 Nov 2026.
+    """
+
+    CSV = CABECERA + "Cargas Ejemplo,T-079,2026-08-20,2026-11-18,1777.50,empresa,0\n"
+    CALCULO = ("--hasta", "2026-11-16")
+
+    def test_sin_la_opcion_sigue_el_tope_general_de_sesenta(self):
+        f = factura(resumen(self.CSV, *self.CALCULO), "T-079")
+        self.assertEqual(f["vencimiento_legal"], "2026-10-19")
+        self.assertEqual(f["dias_de_retraso"], 28)
+
+    def test_con_transporte_el_retraso_empieza_a_los_treinta_dias(self):
+        datos = resumen(self.CSV, *self.CALCULO, "--transporte")
+        f = factura(datos, "T-079")
+        # 20 Aug + 30 = 19 Sep; from 20 Sep to 16 Nov are 58 days, all at 10.40 %.
+        self.assertEqual(f["vencimiento_legal"], "2026-09-19")
+        self.assertEqual(f["dias_de_retraso"], 58)
+        self.assertEqual(D(f["intereses"]), calcular.centimos(D("1777.50") * D("0.1040") * 58 / 365))
+        self.assertTrue(any("Ley 15/2009, art. 41" in nota for nota in f["notas"]))
+        self.assertIn("Ley 15/2009", datos["plazo_legal"])
+
+    def test_un_plazo_pactado_mas_corto_se_respeta(self):
+        csv = CABECERA + "Cargas Ejemplo,T-080,2026-09-01,2026-09-21,1000.00,empresa,0\n"
+        f = factura(resumen(csv, *self.CALCULO, "--transporte"), "T-080")
+        self.assertEqual(f["vencimiento_legal"], "2026-09-21")
+        self.assertEqual(f["notas"], [])
+
+    def test_sin_vencimiento_ni_plazo_son_treinta_dias(self):
+        csv = CABECERA + "Cargas Ejemplo,T-081,2026-09-30,,1000.00,empresa,0\n"
+        f = factura(resumen(csv, *self.CALCULO, "--transporte", "--plazo-dias", "60"), "T-081")
+        self.assertEqual(f["vencimiento_legal"], "2026-10-30")
+
+    def test_la_hoja_cita_la_ley_del_transporte(self):
+        filas = calcular.hojas([], {"tipos_comprobados_el": "2026-10-13", "por_cliente": [], "pendiente": "0", "intereses_de_demora": "0", "compensacion_por_costes_de_cobro": "0", "total_a_reclamar": "0"}, transporte=True)
+        base = next(h for h in filas if h["nombre"] == "Base legal")["filas"]
+        self.assertTrue(any(fila[1] == "Ley 15/2009, art. 41" for fila in base))
+
+    def test_la_guia_cita_el_articulo(self):
+        guia = (SKILL / "references" / "la-ley.md").read_text(encoding="utf-8")
+        self.assertIn("Ley 15/2009, art. 41.1", guia)
+        self.assertIn("BOE-A-2009-18004", guia)

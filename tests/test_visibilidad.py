@@ -366,3 +366,88 @@ class ProteccionContraRobots(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# 2.1.1. A WordPress shop: the shop plugin closes the cart URLs with a wildcard, and the SEO plugin
+# adds a second «User-agent: *» group. Neither closes the site.
+WORDPRESS_ROBOTS = (
+    "User-agent: *\nDisallow: /wp-content/uploads/wc-logs/\nDisallow: /*?add-to-cart=\nDisallow: /*?*add-to-cart=\n"
+    "Disallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\n"
+    "# START YOAST BLOCK\nUser-agent: *\nDisallow:\n\nSitemap: https://tienda.test/sitemap.xml\n# END YOAST BLOCK\n"
+)
+TIENDA = {
+    "https://tienda.test/": ok(pagina("Peluquería en el centro", "https://tienda.test/", jsonld=ORG)),
+    "http://tienda.test/": a("https://tienda.test/"),
+    "https://www.tienda.test/": a("https://tienda.test/"),
+    "http://www.tienda.test/": a("https://tienda.test/"),
+    "https://tienda.test/robots.txt": ok(WORDPRESS_ROBOTS),
+    "https://tienda.test/sitemap.xml": ok(
+        "<urlset><url><loc>https://tienda.test/</loc></url><url><loc>https://tienda.test/servicios/</loc></url>"
+        "<url><loc>https://tienda.test/?add-to-cart=12</loc></url></urlset>"
+    ),
+    "https://tienda.test/servicios/": ok(pagina("Servicios y precios", "https://tienda.test/servicios/", jsonld=ORG)),
+}
+
+
+class RobotsConComodines(unittest.TestCase):
+    def test_un_comodin_no_cierra_la_web(self):
+        grupos, _ = auditar.leer_robots(WORDPRESS_ROBOTS)
+        general, _ = auditar.grupo_de(grupos, "GPTBot")
+        self.assertFalse(auditar.prohibida(general, "/"))
+        self.assertFalse(auditar.prohibida(general, "/servicios/"))
+        self.assertTrue(auditar.prohibida(general, "/?add-to-cart=12"))
+        self.assertTrue(auditar.prohibida(general, "/tienda/?color=rojo&add-to-cart=3"))
+        self.assertTrue(auditar.prohibida(general, "/wp-admin/opciones"))
+        self.assertFalse(auditar.prohibida(general, "/wp-admin/admin-ajax.php"))
+        self.assertFalse(auditar.cerrado_del_todo(general))
+
+    def test_el_dolar_cierra_la_direccion(self):
+        grupo = {"agentes": ["*"], "reglas": [("disallow", "/*.pdf$")]}
+        self.assertTrue(auditar.prohibida(grupo, "/carta.pdf"))
+        self.assertFalse(auditar.prohibida(grupo, "/carta.pdf?v=2"))
+
+    def test_dos_apartados_generales_se_leen_como_uno(self):
+        grupos, _ = auditar.leer_robots("User-agent: *\nDisallow: /panel\n\nUser-agent: *\nDisallow: /api\n")
+        general, propio = auditar.grupo_de(grupos, "*")
+        self.assertFalse(propio)
+        self.assertTrue(auditar.prohibida(general, "/panel/x"))
+        self.assertTrue(auditar.prohibida(general, "/api/x"))
+
+    def test_disallow_de_todo_sigue_cerrando(self):
+        grupos, _ = auditar.leer_robots("User-agent: CCBot\nDisallow: /\n\nUser-agent: GPTBot\nDisallow: /*\n")
+        for agente in ("CCBot", "GPTBot"):
+            grupo, _ = auditar.grupo_de(grupos, agente)
+            self.assertTrue(auditar.cerrado_del_todo(grupo))
+
+    def test_la_auditoria_de_una_tienda_wordpress_lee_sus_paginas(self):
+        informe = auditar.auditar("https://tienda.test", pedir=servidor(TIENDA), pausa=0)
+        leidas = [p["url"] for p in informe["paginas"] if p["codigo"] == 200]
+        self.assertIn("https://tienda.test/servicios/", leidas)
+        self.assertNotIn("https://tienda.test/?add-to-cart=12", leidas)
+        self.assertEqual(comprobacion(informe, 3)["resultado"], auditar.BIEN)
+        self.assertEqual(comprobacion(informe, 7)["resultado"], auditar.BIEN)
+
+
+class HttpCortadoPorElEntorno(unittest.TestCase):
+    """2.1.1: every http entry failing alike while https works is reported as not checked, not as a broken site."""
+
+    def sitio(self, cambios):
+        sitio = dict(SANO)
+        sitio.update(cambios)
+        return sitio
+
+    def test_si_todo_http_falla_igual_sale_sin_comprobar(self):
+        cortado = {"codigo": 500, "destino": None, "cuerpo": "", "error": None}
+        informe = auditar.auditar("https://sano.test", pedir=servidor(self.sitio({"http://sano.test/": cortado, "http://www.sano.test/": cortado})), pausa=0)
+        novena = comprobacion(informe, 9)
+        self.assertEqual(novena["resultado"], auditar.SIN_COMPROBAR, novena)
+        self.assertIn("navegador", novena["arreglo"])
+
+    def test_si_solo_falla_una_entrada_http_sigue_siendo_fallo(self):
+        roto = {"codigo": None, "destino": None, "cuerpo": "", "error": "no responde (Connection refused)"}
+        informe = auditar.auditar("https://sano.test", pedir=servidor(self.sitio({"http://www.sano.test/": roto})), pausa=0)
+        self.assertEqual(comprobacion(informe, 9)["resultado"], auditar.FALLO)
+
+    def test_si_falla_https_sigue_siendo_fallo(self):
+        informe = auditar.auditar("https://roto.test", pedir=servidor(ROTO), pausa=0)
+        self.assertEqual(comprobacion(informe, 9)["resultado"], auditar.FALLO)

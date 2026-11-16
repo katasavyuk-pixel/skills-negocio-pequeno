@@ -25,6 +25,13 @@ Scenarios:
     con_retraso        every incoming payment arrives --retraso-dias later
     sin_cliente_mayor  nothing arrives from the customer the period depends on most
 
+Counter or table sales (a shop, a bar, a hair salon) are many small customers who
+pay on the spot, not one customer who can pay late or stop paying. With
+`--cobro al_momento` every incoming line is such a sale; with any other value,
+the lines whose `tercero` is «mostrador». Those sales are never delayed and never
+taken for the largest customer, and a scenario with nothing left to move is
+marked as not applying instead of shown as a fall.
+
 Prints a JSON summary and writes the workbook. Exit code 0 when the forecast was
 produced, 1 when the CSV has to be fixed (each problem with its line), 2 when a
 file cannot be read or written.
@@ -55,6 +62,13 @@ IMPORTE = re.compile(r"^-?\d+(\.\d{1,2})?$")
 # https://sede.agenciatributaria.gob.es/Sede/ayuda/calendario-contribuyente/calendario-contribuyente-2026.html
 VENCIMIENTOS_TRIMESTRALES = ((1, 30), (4, 20), (7, 20), (10, 20))
 PALABRAS_DE_IMPUESTO = ("iva", "303", "130", "irpf", "hacienda", "aeat", "impuesto", "111", "115", "trimestre")
+# The VAT return or the IRPF instalment themselves. A line that names only the withholding returns
+# (111, 115) is a different payment of the same days and does not answer for the quarterly VAT.
+PALABRAS_DE_LA_DECLARACION = ("iva", "303", "130", "pago fraccionado")
+PALABRAS_DE_RETENCIONES = ("111", "115", "retencion")
+# The `tercero` that marks counter sales in a business that also invoices.
+MOSTRADOR = "mostrador"
+COBRO = ("a_plazo", "mixto", "al_momento")
 # How far from a filing deadline a payment still counts as "the tax payment of that quarter".
 MARGEN_IMPUESTO_DIAS = 12
 # Enough payments per key week to explain it; the full list is in the workbook.
@@ -182,7 +196,7 @@ def semanas(inicio, cuantas):
     return tramos
 
 
-def proyectar(movimientos, tramos, saldo, retraso=0, excluir=()):
+def proyectar(movimientos, tramos, saldo, retraso=0, excluir=(), no_se_retrasan=()):
     """Weekly inflows, outflows and closing balance. `excluir` are the movements that never arrive."""
     fin = tramos[-1][1]
     entradas = [Decimal("0")] * len(tramos)
@@ -192,7 +206,7 @@ def proyectar(movimientos, tramos, saldo, retraso=0, excluir=()):
         if any(movimiento is excluido for excluido in excluir):
             continue
         dia = movimiento["fecha"]
-        if movimiento["importe"] > 0 and retraso:
+        if movimiento["importe"] > 0 and retraso and not any(movimiento is fijo for fijo in no_se_retrasan):
             dia = dia + datetime.timedelta(days=retraso)
         if dia > fin:
             fuera += movimiento["importe"]
@@ -244,7 +258,7 @@ def avisos_de_impuestos(movimientos, inicio, fin):
             cubierto = any(
                 m["importe"] < 0
                 and abs((m["fecha"] - limite).days) <= MARGEN_IMPUESTO_DIAS
-                and any(palabra in sin_tildes(m["concepto"] + " " + m["tercero"]) for palabra in PALABRAS_DE_IMPUESTO)
+                and cubre_la_declaracion(m)
                 for m in movimientos
             )
             if not cubierto:
@@ -253,6 +267,22 @@ def avisos_de_impuestos(movimientos, inicio, fin):
                     "Si toca pagar, la previsión es demasiado optimista: pregunta el importe." % dia_mes(limite)
                 )
     return avisos
+
+
+def cubre_la_declaracion(movimiento):
+    """A tax payment that can be the quarterly return: not one that names only the withholding returns."""
+    texto = sin_tildes(movimiento["concepto"] + " " + movimiento["tercero"])
+    if not any(palabra in texto for palabra in PALABRAS_DE_IMPUESTO):
+        return False
+    solo_retenciones = any(palabra in texto for palabra in PALABRAS_DE_RETENCIONES) and not any(
+        palabra in texto for palabra in PALABRAS_DE_LA_DECLARACION
+    )
+    return not solo_retenciones
+
+
+def es_venta_al_momento(cobro, cobro_del_negocio):
+    """Counter or table sales: many customers paying on the spot."""
+    return cobro_del_negocio == "al_momento" or sin_tildes(cobro["tercero"]).strip() == MOSTRADOR
 
 
 def cliente_mayor(cobros):
@@ -279,18 +309,25 @@ def cliente_mayor(cobros):
     }
 
 
-def construir(movimientos, saldo, inicio, cuantas, minimo, retraso, calendario_fiscal=True):
+def construir(movimientos, saldo, inicio, cuantas, minimo, retraso, calendario_fiscal=True, cobro="a_plazo"):
     tramos = semanas(inicio, cuantas)
     fin = tramos[-1][1]
     desplegados, vencidos = desplegar(movimientos, inicio, fin)
     cobros = [m for m in desplegados if m["importe"] > 0]
-    mayor = cliente_mayor(cobros)
+    al_momento = [m for m in cobros if es_venta_al_momento(m, cobro)]
+    a_plazo = [m for m in cobros if not es_venta_al_momento(m, cobro)]
+    # Counter sales are many small customers: none of them is "the customer the period depends on".
+    mayor = cliente_mayor(a_plazo)
 
     escenarios = {
         "previsto": proyectar(desplegados, tramos, saldo),
-        "con_retraso": proyectar(desplegados, tramos, saldo, retraso=retraso),
+        "con_retraso": proyectar(desplegados, tramos, saldo, retraso=retraso, no_se_retrasan=al_momento),
         "sin_cliente_mayor": proyectar(desplegados, tramos, saldo, excluir=mayor["cobros"] if mayor else ()),
     }
+    no_aplica = {}
+    if cobros and not a_plazo:
+        no_aplica["con_retraso"] = "Todo lo que entra son ventas que se cobran en el momento: no hay cobros que puedan llegar tarde."
+        no_aplica["sin_cliente_mayor"] = "Las ventas en el momento son de muchos clientes pequeños: no hay un cliente del que dependa el periodo."
 
     avisos = []
     cobros_vencidos = [m for m in vencidos if m["importe"] > 0]
@@ -320,9 +357,16 @@ def construir(movimientos, saldo, inicio, cuantas, minimo, retraso, calendario_f
     if calendario_fiscal:
         avisos.extend(avisos_de_impuestos(desplegados, inicio, fin))
 
+    if no_aplica:
+        avisos.append("Cobras en el momento: los escenarios de retraso y de cliente mayor no aplican. Si quieres ver una semana floja, apunta unas ventas más bajas en el CSV y vuelve a ejecutar.")
+
     resumidos = [resumir(nombre, proyeccion, tramos, minimo) for nombre, proyeccion in escenarios.items()]
+    for escenario in resumidos:
+        if escenario["escenario"] in no_aplica:
+            escenario["aplica"] = False
+            escenario["motivo"] = no_aplica[escenario["escenario"]]
     # Why a week is bad is a fact of the list, not something to guess afterwards: its largest payments.
-    claves = sorted({e[campo] for e in resumidos for campo in ("semana_del_saldo_mas_bajo", "primera_semana_bajo_el_minimo", "primera_semana_en_negativo") if e[campo]})
+    claves = sorted({e[campo] for e in resumidos if e.get("aplica", True) for campo in ("semana_del_saldo_mas_bajo", "primera_semana_bajo_el_minimo", "primera_semana_en_negativo") if e[campo]})
     pagos_clave = {}
     for clave in claves:
         desde, hasta = next(tramo for tramo in tramos if tramo[0].isoformat() == clave)
@@ -342,17 +386,20 @@ def construir(movimientos, saldo, inicio, cuantas, minimo, retraso, calendario_f
         "cobros_vencidos": str(sum(m["importe"] for m in cobros_vencidos)),
         "avisos": avisos,
     }
+    if cobro != "a_plazo":
+        resumen["cobro"] = cobro
     return tramos, desplegados, escenarios, resumen
 
 
 def hojas(tramos, desplegados, escenarios, resumen, minimo):
     previsto, retraso, sin_mayor = escenarios["previsto"], escenarios["con_retraso"], escenarios["sin_cliente_mayor"]
     cliente = resumen["cliente_mayor"]["nombre"] if resumen["cliente_mayor"] else "el cliente mayor"
-    filas = [["Semana", "Hasta", "Cobros", "Pagos", "Saldo previsto", "Saldo si cobras con %d días de retraso" % resumen["retraso_dias"], "Saldo si no paga %s" % cliente, "Por debajo del mínimo"]]
+    aplica = {e["escenario"]: e.get("aplica", True) for e in resumen["escenarios"]}
+    filas = [["Semana", "Hasta", "Cobros", "Pagos", "Saldo previsto", "Saldo si cobras con %d días de retraso" % resumen["retraso_dias"] + ("" if aplica["con_retraso"] else " (no aplica)"), "Saldo si no paga %s" % cliente + ("" if aplica["sin_cliente_mayor"] else " (no aplica)"), "Por debajo del mínimo"]]
     for i, (desde, hasta) in enumerate(tramos):
         bajo = ""
         if minimo is not None:
-            marcas = [nombre for nombre, serie in (("previsto", previsto), ("con retraso", retraso), ("sin %s" % cliente, sin_mayor)) if serie["saldos"][i] < minimo]
+            marcas = [nombre for nombre, serie, clave in (("previsto", previsto, "previsto"), ("con retraso", retraso, "con_retraso"), ("sin %s" % cliente, sin_mayor, "sin_cliente_mayor")) if aplica[clave] and serie["saldos"][i] < minimo]
             bajo = ", ".join(marcas)
         filas.append([desde, hasta, previsto["entradas"][i], previsto["salidas"][i], previsto["saldos"][i], retraso["saldos"][i], sin_mayor["saldos"][i], bajo])
 
@@ -373,6 +420,9 @@ def hojas(tramos, desplegados, escenarios, resumen, minimo):
         notas.append(["Mínimo con el que el negocio está tranquilo", euros(minimo)])
     for escenario in resumen["escenarios"]:
         nombre = {"previsto": "Si todo va según lo previsto", "con_retraso": "Si los cobros llegan con %d días de retraso" % resumen["retraso_dias"], "sin_cliente_mayor": "Si no paga %s" % cliente}[escenario["escenario"]]
+        if not escenario.get("aplica", True):
+            notas.append([nombre, "No aplica. " + escenario["motivo"]])
+            continue
         frase = "El saldo más bajo es %s, la semana del %s." % (euros(escenario["saldo_mas_bajo"]), fecha(escenario["semana_del_saldo_mas_bajo"]))
         if escenario["primera_semana_en_negativo"]:
             frase += " La cuenta entra en negativo la semana del %s." % fecha(escenario["primera_semana_en_negativo"])
@@ -419,6 +469,12 @@ def main(argumentos=None):
         action="store_true",
         help="no avisar de los vencimientos trimestrales: úsalo si `territorio` no es `comun`, porque esas fechas son las del territorio común",
     )
+    analizador.add_argument(
+        "--cobro",
+        choices=COBRO,
+        default="a_plazo",
+        help="cómo cobra el negocio (`cobro` del perfil). Con al_momento, todo lo que entra son ventas de mostrador o de mesa: no se retrasan ni cuentan como un cliente",
+    )
     opciones = analizador.parse_args(argumentos)
 
     if not 1 <= opciones.semanas <= SEMANAS_MAX:
@@ -438,7 +494,8 @@ def main(argumentos=None):
         return 1
 
     tramos, desplegados, escenarios, resumen = construir(
-        movimientos, opciones.saldo, opciones.fecha, opciones.semanas, opciones.minimo, opciones.retraso_dias, calendario_fiscal=not opciones.sin_calendario_fiscal
+        movimientos, opciones.saldo, opciones.fecha, opciones.semanas, opciones.minimo, opciones.retraso_dias, calendario_fiscal=not opciones.sin_calendario_fiscal,
+        cobro=opciones.cobro,
     )
     if opciones.salida:
         try:

@@ -80,7 +80,18 @@ Abierta, sin lista de opciones. Si la provincia resulta ser de Canarias, Ceuta o
 | Paga recargo de equivalencia (una tienda) | `recargo_equivalencia` |
 | Varios tipos según lo que venda | `varios` |
 
-`retencion_irpf`: `no`, `15` o `7`. `gestoria`: `si` o `no`.
+`retencion_irpf`: el porcentaje que le retienen en sus facturas.
+
+| Lo que diga sobre la retención | `retencion_irpf` |
+| --- | --- |
+| Ninguna (lo normal en un comercio, un bar o una sociedad) | `no` |
+| La de profesional, el 15 | `15` |
+| La de profesional que empieza, el 7 | `7` |
+| El 1 (transporte de mercancías o mudanzas en módulos) | `1` |
+| El 2 (actividad agrícola, ganadera o forestal) | `2` |
+| El 19 (factura el alquiler de un local) | `19` |
+
+`gestoria`: `si` o `no`.
 
 No corrijas lo que diga aunque te parezca raro para su actividad: apúntalo y, si el validador avisa, se lo cuentas.
 

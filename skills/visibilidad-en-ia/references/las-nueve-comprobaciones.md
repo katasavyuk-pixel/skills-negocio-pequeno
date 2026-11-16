@@ -36,6 +36,8 @@ Qué mira cada una, por qué importa, cómo se arregla y a quién se le pide. El
 
 **Por qué.** `robots.txt` es lo primero que pide un rastreador. Tiene una trampa: **un rastreador que encuentra un apartado con su nombre ignora el apartado general por completo.** Darle la bienvenida a uno con un `Allow: /` a secas le abre todo lo que estaba cerrado para los demás.
 
+**Cómo lee el fichero.** Como lo leen los rastreadores (RFC 9309): `*` vale por cualquier trozo de dirección y un `$` final la cierra, así que `Disallow: /*?add-to-cart=` solo cierra las direcciones del carrito, no la web; gana la regla más larga que encaja, y a igualdad, la que permite; y dos apartados para el mismo rastreador, o dos `User-agent: *`, se leen como uno.
+
 **Qué mira.** Dos cosas: que ninguno de estos rastreadores tenga la web entera cerrada, y que cada apartado con nombre repita las protecciones del general. Los nombres: GPTBot, OAI-SearchBot, ChatGPT-User, PerplexityBot, ClaudeBot, Claude-Web, Google-Extended, Applebot-Extended, meta-externalagent, CCBot.
 
 **Cómo se arregla.** En cada apartado con nombre se repiten las mismas líneas `Disallow` del apartado general. Cerrar la web a un rastreador es una decisión legítima: si es a propósito, se dice y no se cuenta como error.
@@ -85,6 +87,8 @@ Qué mira cada una, por qué importa, cómo se arregla y a quién se le pide. El
 **Por qué.** Si una forma de escribir la dirección no resuelve o sirve un certificado caducado, parte de quien enlaza y de quien rastrea se queda fuera antes de leer una línea. No se nota desde dentro, porque quien lleva la web entra siempre por la dirección buena.
 
 **Qué mira.** La dirección con `http` y con `https`, y con y sin `www` cuando es un dominio principal: todas tienen que acabar en la misma, con `https` y sin error de certificado. A un subdominio (`tienda.ejemplo.es`) no se le exige `www`.
+
+**Si sale «sin comprobar».** Todas las entradas con `https` llegan y todas las de `http` fallan igual. Es lo que se ve cuando el entorno donde se ejecuta la auditoría corta las conexiones sin cifrar (el sandbox de un agente, un proxy de empresa), y la auditoría no lo puede distinguir de una web que no atiende `http`. Se pide abrir la dirección con `http` en un navegador normal antes de dar nada por roto.
 
 **Cómo se arregla.** Lo hace quien lleva el alojamiento o el dominio. Antes de renovar un certificado, comprobar que el dominio está asignado a la web: un dominio sin asignar no tiene certificado que renovar.
 

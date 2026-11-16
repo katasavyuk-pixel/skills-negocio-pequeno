@@ -27,8 +27,12 @@ NO_APLICA = "no_aplica"
 # The Spanish VAT rates a business invoices with, plus the cases where it does not charge VAT.
 # IGIC (Canarias) and IPSI (Ceuta, Melilla) replace VAT there; the skills say what they do not cover.
 IVA = ("21", "10", "4", "exento", "recargo_equivalencia", "varios", "igic", "ipsi")
-# Withholding a professional states on an invoice: none, the general rate, or the reduced one for new professionals.
-RETENCION = ("no", "15", "7")
+# Withholding an invoice can carry (AEAT, cuadro de tipos de retención; Reglamento del IRPF, arts. 95 and 101):
+# none; 15 or 7 for professionals; 1 for the empresarial activities in módulos the reglamento lists
+# (road freight 722 and removals 757 in the 2026 order); 2 for farming and forestry; 19 for renting out premises.
+RETENCION = ("no", "15", "7", "1", "2", "19")
+# The rates that only an individual in IRPF carries. Renting out premises withholds 19 % from a company too.
+RETENCION_SOLO_IRPF = ("15", "7", "1", "2")
 
 # clave -> (obligatoria, valores válidos o None si es texto libre, puede quedar pendiente)
 CLAVES = {
@@ -159,7 +163,7 @@ def revisar(valores, donde, repetidas):
                     "(Ley 3/2004, art. 4.3). Las skills de cobros calcularán con %d."
                     % (dias, PLAZO_LEGAL_MAX, PLAZO_LEGAL_MAX)
                 )
-    if valores.get("retencion_irpf") in ("15", "7") and valores.get("forma") == "sociedad":
+    if valores.get("retencion_irpf") in RETENCION_SOLO_IRPF and valores.get("forma") == "sociedad":
         avisos.append("`retencion_irpf` es %s pero `forma` es sociedad: una sociedad no lleva retención de IRPF en sus facturas. Confírmalo." % valores["retencion_irpf"])
     web = valores.get("web")
     if web and web.lower() not in (PENDIENTE, "no") and not re.match(r"https?://\S+\.\S+", web):

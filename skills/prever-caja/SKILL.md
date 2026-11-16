@@ -4,7 +4,7 @@ description: 'Proyecta la caja de un negocio semana a semana durante un trimestr
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.1.0"
+  version: "2.1.1"
 ---
 
 # Prever la caja
@@ -35,6 +35,7 @@ Como indica [references/perfil.md](references/perfil.md). Esta skill usa:
 | `caja_minima_eur` | El saldo por debajo del cual se avisa (`--minimo`). Si está pendiente, pregúntalo: «¿Con cuánto en la cuenta estás tranquilo?». |
 | `plazo_cobro_dias` | La fecha de cobro de una factura que no dice su vencimiento. |
 | `forma`, `gestoria` | Qué impuestos preguntar y a quién pedirle el importe. |
+| `cobro` | Pásalo con `--cobro`. Con `al_momento` (tienda, bar, peluquería), las ventas no se retrasan ni cuentan como un solo cliente, y esos dos escenarios salen como «no aplica». |
 | `territorio` | Si no es `comun`, ejecuta el script con `--sin-calendario-fiscal` y pregunta sus fechas de impuestos. |
 
 ### 2. Reunir los datos
@@ -60,6 +61,7 @@ python3 scripts/prever.py RUTA/movimientos.csv --saldo 9420.75 --fecha 2026-10-1
     --minimo 8000 --salida RUTA/prevision-caja.xlsx
 ```
 
+- `--cobro` es el `cobro` del perfil: `al_momento`, `a_plazo` o `mixto`. En un negocio `mixto`, las ventas de mostrador o de mesa van con `tercero` `mostrador` y el resto con el nombre de cada cliente.
 - `--saldo` y `--fecha`: lo que hay en la cuenta y el día en que se miró. Si el saldo tiene más de tres días, pide uno nuevo.
 - Si el script lista problemas, cada uno trae su línea: corrige el CSV y vuelve a ejecutarlo. No sigas hasta que termine sin errores.
 - El script imprime un resumen en JSON. Los números de tu resumen salen de ahí, sin redondear ni recalcular.
@@ -73,6 +75,7 @@ Cada línea de `avisos` del resumen es una pregunta pendiente, no un adorno:
 | --- | --- |
 | Cobros ya vencidos | Pregunta si de verdad los espera esta semana. Si no, quítalos del CSV, vuelve a ejecutar y dilo en el resumen. |
 | Un cliente pesa más de un tercio | Nómbralo en el resumen con su porcentaje. |
+| Los escenarios de retraso y de cliente mayor no aplican | Dilo en una frase: cobra en el momento. Si quiere ver una semana floja, pregúntale cuánto vende en una mala y apúntalo en el CSV. |
 | Vence la declaración trimestral y no hay pago de impuestos | Pregunta el importe, a la persona o a su gestoría. Si no se sabe, dilo en el resumen como lo primero que falta. |
 | No hay cobros, o no hay pagos | Falta una lista entera. Pídela antes de entregar nada. |
 

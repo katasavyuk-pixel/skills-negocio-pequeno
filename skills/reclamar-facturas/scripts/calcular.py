@@ -56,6 +56,10 @@ CENTIMO = Decimal("0.01")
 PLAZO_SIN_PACTO = 30
 # Ley 3/2004, art. 4.3: no agreement can set a term above sixty calendar days.
 PLAZO_MAXIMO = 60
+# Ley 15/2009 (road freight), art. 41: whoever pays for the transport is late after thirty days
+# from receiving the invoice; a longer agreed term is void when it is abusive (art. 41.3).
+# https://www.boe.es/buscar/act.php?id=BOE-A-2009-18004
+PLAZO_TRANSPORTE = 30
 # Ley 3/2004, art. 8.1: a fixed amount added to the principal once the debtor is late.
 COMPENSACION = Decimal("40.00")
 # Simple interest on a 365-day year: the law fixes the rate and its semester, not the day count. This is the usual practice.
@@ -201,8 +205,10 @@ def leer_facturas(ruta):
     return facturas
 
 
-def vencimiento_legal(factura, plazo_pactado):
+def vencimiento_legal(factura, plazo_pactado, transporte=False):
     """The day from which the debtor is late, and a note when the law moves it."""
+    if transporte:
+        return vencimiento_transporte(factura, plazo_pactado)
     tope = factura["entrega"] + datetime.timedelta(days=PLAZO_MAXIMO)
     if factura["vencimiento"]:
         if factura["vencimiento"] > tope:
@@ -215,6 +221,23 @@ def vencimiento_legal(factura, plazo_pactado):
             nota = "Sin vencimiento en la factura y plazo habitual de %d días, que pasa del máximo legal: se usan %d (art. 4.3)." % (plazo_pactado, PLAZO_MAXIMO)
         return factura["entrega"] + datetime.timedelta(days=dias), nota
     return factura["entrega"] + datetime.timedelta(days=PLAZO_SIN_PACTO), "Sin plazo pactado: la ley da %d días desde la entrega (art. 4.1)." % PLAZO_SIN_PACTO
+
+
+def vencimiento_transporte(factura, plazo_pactado):
+    """Road freight: thirty days from the invoice (Ley 15/2009, art. 41), whatever longer term was written."""
+    tope = factura["entrega"] + datetime.timedelta(days=PLAZO_TRANSPORTE)
+    pactado = factura["vencimiento"]
+    if not pactado and plazo_pactado:
+        pactado = factura["entrega"] + datetime.timedelta(days=plazo_pactado)
+    if pactado and pactado <= tope:
+        return pactado, ""
+    if pactado:
+        return tope, (
+            "Transporte de mercancías por carretera: quien paga el porte está en mora a los %d días de recibir la factura (Ley 15/2009, art. 41.1). "
+            "El plazo pactado (%s) se recorta y el retraso se cuenta desde el %s. Un plazo más largo solo vale si no es abusivo ni viene en condiciones generales (art. 41.3): si se negoció, quita --transporte."
+            % (PLAZO_TRANSPORTE, dia_mes(pactado), dia_mes(tope))
+        )
+    return tope, "Transporte de mercancías por carretera, sin plazo pactado: mora a los %d días de recibir la factura (Ley 15/2009, art. 41.1)." % PLAZO_TRANSPORTE
 
 
 def tramos_de_interes(desde, hasta, principal, tipos):
@@ -264,11 +287,11 @@ def anios_despues(dia, anios):
         return dia.replace(year=dia.year + anios, day=28)
 
 
-def calcular(facturas, hasta, tipos, plazo_pactado=None):
+def calcular(facturas, hasta, tipos, plazo_pactado=None, transporte=False):
     """Returns (rows, missing semesters). Raises nothing: a missing rate is reported, not guessed."""
     filas, faltan = [], set()
     for factura in facturas:
-        vence, nota_plazo = vencimiento_legal(factura, plazo_pactado)
+        vence, nota_plazo = vencimiento_legal(factura, plazo_pactado, transporte)
         dias = (hasta - vence).days
         fila = dict(factura, vencimiento_legal=vence, dias_de_retraso=max(dias, 0), notas=[], tramos=[], intereses=Decimal("0.00"), compensacion=Decimal("0.00"), intereses_sobre_base=None, fase=None)
         if nota_plazo:
@@ -389,7 +412,7 @@ def resumir(filas, hasta, comprobado):
     }
 
 
-def hojas(filas, resumen):
+def hojas(filas, resumen, transporte=False):
     reclamaciones = [["Cliente", "Factura", "Vence (según la ley)", "Días de retraso", "Pendiente", "Intereses de demora", "Compensación (art. 8)", "Total a reclamar", "Qué toca", "Notas"]]
     for f in filas:
         reclamaciones.append([f["cliente"], f["numero"], f["vencimiento_legal"], f["dias_de_retraso"], f["importe"], f["intereses"], f["compensacion"], f["total"], FASES.get(f["fase"], f["estado"]), " ".join(f["notas"])])
@@ -408,6 +431,10 @@ def hojas(filas, resumen):
         ["Qué", "Dónde está", "Qué dice"],
         ["A quién se aplica", "Ley 3/2004, art. 3", "A los pagos entre empresas (un autónomo lo es) y con la Administración. No a los consumidores."],
         ["Plazo de pago", "Ley 3/2004, art. 4", "Treinta días naturales desde la entrega si no se pactó otro. El pactado no puede pasar de sesenta."],
+    ]
+    if transporte:
+        base_legal.append(["Plazo en el transporte por carretera", "Ley 15/2009, art. 41", "Quien paga el porte está en mora a los treinta días de recibir la factura. El pacto en contrario es nulo si es abusivo o viene en condiciones generales."])
+    base_legal += [
         ["Cuándo empieza el retraso", "Ley 3/2004, art. 5", "Automáticamente al pasar el plazo, sin necesidad de aviso ni reclamación."],
         ["Interés de demora", "Ley 3/2004, art. 7", "El pactado en el contrato; si no hay, el tipo legal: el del Banco Central Europeo más ocho puntos, fijado para cada semestre."],
         ["Compensación por costes de cobro", "Ley 3/2004, art. 8", "Cuarenta euros que se añaden a la deuda en todo caso, y los costes acreditados que los superen."],
@@ -445,6 +472,7 @@ def main(argumentos=None):
     analizador.add_argument("--tipo", type=tipo_arg, action="append", default=[], metavar="AAAA-S=TIPO", help="tipo de un semestre que no esté en la tabla, leído en el BOE; se puede repetir")
     analizador.add_argument("--tipos", default=str(TIPOS_POR_DEFECTO), help="tabla de tipos (por defecto, la de la skill)")
     analizador.add_argument("--salida", help="ruta del .xlsx; sin ella solo se imprime el resumen")
+    analizador.add_argument("--transporte", action="store_true", help="el negocio cobra portes de transporte de mercancías por carretera: mora a los 30 días (Ley 15/2009, art. 41)")
     opciones = analizador.parse_args(argumentos)
     if opciones.plazo_dias is not None and not 1 <= opciones.plazo_dias <= 365:
         analizador.error("--plazo-dias tiene que estar entre 1 y 365")
@@ -461,7 +489,7 @@ def main(argumentos=None):
         print("No puedo leer los datos: %s" % fallo, file=sys.stderr)
         return 2
 
-    filas, faltan = calcular(facturas, opciones.hasta, tipos, opciones.plazo_dias)
+    filas, faltan = calcular(facturas, opciones.hasta, tipos, opciones.plazo_dias, opciones.transporte)
     if faltan:
         print(
             "FALTA EL TIPO DE DEMORA DE %d SEMESTRE(S): %s.\n"
@@ -472,9 +500,11 @@ def main(argumentos=None):
         return 1
 
     resumen = resumir(filas, opciones.hasta, comprobado)
+    if opciones.transporte:
+        resumen["plazo_legal"] = "transporte de mercancías por carretera: 30 días (Ley 15/2009, art. 41)"
     if opciones.salida:
         try:
-            escribir_xlsx(opciones.salida, hojas(filas, resumen))
+            escribir_xlsx(opciones.salida, hojas(filas, resumen, opciones.transporte))
         except OSError as fallo:
             print("No puedo escribir %s: %s" % (opciones.salida, fallo), file=sys.stderr)
             return 2

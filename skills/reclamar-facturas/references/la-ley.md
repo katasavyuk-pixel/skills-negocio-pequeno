@@ -1,6 +1,6 @@
 # Lo que dice la ley sobre una factura pagada tarde
 
-Todo lo de este fichero se leyó en el texto consolidado del BOE el 13 de octubre de 2026. Cada afirmación lleva su artículo. Lo que no está cerrado se dice que no lo está.
+Todo lo de este fichero se leyó en el texto consolidado del BOE el 13 de octubre de 2026; lo del transporte por carretera, el 16 de noviembre de 2026. Cada afirmación lleva su artículo. Lo que no está cerrado se dice que no lo está.
 
 ## Contenido
 
@@ -25,6 +25,8 @@ No se aplica a las operaciones en las que interviene un consumidor (art. 3.2.a),
 - Sin plazo pactado: a los treinta días naturales desde la entrega de la mercancía o la prestación del servicio, aunque la factura llegara antes (art. 4.1).
 - Con plazo pactado: el pactado, que no puede pasar de sesenta días naturales «en ningún caso» (art. 4.3). Si una factura dice «a 90 días», el retraso empieza el día 60.
 - Cuentan todos los días del año; son nulos los pactos que excluyen las vacaciones (art. 2.d).
+
+**Transporte de mercancías por carretera.** Tiene su propia regla, que manda sobre la general: «el obligado al pago del transporte incurrirá en mora en el plazo de treinta días» (Ley 15/2009, art. 41.1). Si no está clara la fecha en que recibió la factura, los treinta días se cuentan desde la entrega de las mercancías en destino (art. 41.2): apúntala en la columna `entrega`. El pacto en contrario es nulo si es abusivo para el transportista, y no vale si viene en unas condiciones generales que solo se podían aceptar o rechazar (art. 41.3). Con `--transporte`, el script recorta a treinta días cualquier plazo más largo y lo explica en la nota de la factura.
 
 El script toma la fecha de la factura como fecha de entrega. Si la entrega fue otro día, se apunta en la columna `entrega`.
 
@@ -94,4 +96,5 @@ El script marca las facturas de más de tres años y las de más de cinco.
 | --- | --- |
 | Ley 3/2004, de medidas de lucha contra la morosidad en las operaciones comerciales | `https://www.boe.es/buscar/act.php?id=BOE-A-2004-21830` |
 | Tipo del segundo semestre de 2026 | `https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-14327` |
+| Ley 15/2009, del contrato de transporte terrestre de mercancías (art. 41) | `https://www.boe.es/buscar/act.php?id=BOE-A-2009-18004` |
 | Código Civil, arts. 1964, 1967 y 1973 | `https://www.boe.es/buscar/act.php?id=BOE-A-1889-4763` |

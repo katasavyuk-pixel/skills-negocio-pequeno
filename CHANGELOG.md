@@ -1,5 +1,18 @@
 # Cambios
 
+## 2.1.1 · 2026-11-16
+
+Cuatro fallos que salieron al probar las skills con casos de ejemplo de negocios reales: un transportista, un bar y webs WordPress. Todo lo demás se comporta igual que en la 2.1.0.
+
+- **Corregido** (`empezar`): el perfil solo admitía retenciones del 15 % y del 7 %, así que un transportista en módulos no podía terminar la bienvenida. Ahora admite también el 1 % (actividades en módulos de la lista del art. 95.6 del Reglamento del IRPF, como el transporte de mercancías por carretera y las mudanzas), el 2 % (actividades agrícolas, ganaderas y forestales) y el 19 % (alquiler de un local), según el cuadro de tipos de retención de la Agencia Tributaria. El aviso de «una sociedad no lleva retención» ya no salta con el 19 %, que también retiene a una sociedad.
+- **Corregido** (`prever-caja`): las ventas de mostrador o de mesa contaban como un solo cliente. En un bar, el escenario «sin el cliente mayor» quitaba todas las ventas y el de «cobros con retraso» las retrasaba catorce días. Con `--cobro al_momento`, o con `tercero` `mostrador` en un negocio mixto, esas ventas no se retrasan ni cuentan como cliente, y un escenario que no tiene nada que mover sale como «no aplica».
+- **Corregido** (`prever-caja`): un pago de retenciones de enero (modelos 111 o 115) bastaba para dar por apuntado el IVA del cuarto trimestre del 30 de enero, y no se avisaba de que faltaba. Ahora solo lo cubre un pago que no sea solo de retenciones.
+- **Corregido** (`visibilidad-en-ia`): una regla de `robots.txt` con comodín, como el `Disallow: /*?add-to-cart=` de las tiendas WordPress, se leía como si cerrara la web entera, y la auditoría no leía ninguna página. Ahora lee `*` y `$` como los rastreadores (RFC 9309), con la regla más larga ganando y la que permite ganando un empate, y junta los apartados repetidos para el mismo rastreador.
+- **Corregido** (`visibilidad-en-ia`): si el entorno corta las conexiones sin cifrar, todas las entradas con `http` fallaban y la comprobación 9 decía que la web estaba rota. Cuando todas las de `http` fallan igual y todas las de `https` funcionan, ahora sale «sin comprobar», y se pide abrirla en un navegador.
+- **Corregido** (`reclamar-facturas`): en el transporte de mercancías por carretera, quien paga el porte está en mora a los 30 días (Ley 15/2009, art. 41), no a los 60 de la ley general. Con `--transporte`, el script recorta a 30 días cualquier plazo más largo, lo explica factura a factura y lo cita en la hoja «Base legal».
+- **Añadido**: 26 pruebas, una tanda por fallo, con los casos de ejemplo con los que salieron.
+- **Cambiado**: las pruebas de los scripts corren en `ubuntu-24.04`. `ubuntu-latest` pasó a Ubuntu 26.04 en octubre de 2026 y allí no hay Python 3.9, así que la integración continua fallaba antes de llegar a las pruebas.
+
 ## 2.1.0 · 2026-10-15
 
 Las skills ya no son solo para Claude: se instalan y se usan en Codex, en OpenCode y en cualquier agente que lea el formato Agent Skills. Las skills no cambian; cambia cómo se instalan y lo que lo explica.

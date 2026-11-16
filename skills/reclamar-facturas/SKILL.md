@@ -4,7 +4,7 @@ description: 'Calcula lo que le deben a un negocio por facturas pagadas tarde, c
 license: MIT
 metadata:
   author: Kata Ivanovych
-  version: "2.1.0"
+  version: "2.1.1"
 ---
 
 # Reclamar facturas
@@ -39,6 +39,7 @@ Como indica [references/perfil.md](references/perfil.md). Esta skill usa:
 | `plazo_cobro_dias` | El vencimiento de las facturas que no lo dicen (`--plazo-dias`). |
 | `trato`, `firma`, `nombre` | El tono y la firma de cada carta. |
 | `cobro` | Si es `al_momento`, pregunta qué facturas hay: lo normal es que no haya ninguna. |
+| `actividad` | Si es transporte de mercancías por carretera, el plazo legal es otro: ejecuta con `--transporte` (paso 4). |
 
 ### 2. Reunir las facturas sin cobrar
 
@@ -64,6 +65,7 @@ python3 scripts/calcular.py RUTA/facturas.csv --hasta 2026-10-13 --plazo-dias 30
 ```
 
 - `--hasta` es hoy. `--plazo-dias` es el `plazo_cobro_dias` del perfil; si está pendiente, no lo pongas.
+- **Si las facturas son portes de transporte de mercancías por carretera**, añade `--transporte`. Ahí quien paga el porte está en mora a los 30 días de recibir la factura (Ley 15/2009, art. 41), no a los 60 de la ley general. Un plazo más largo solo vale si se negoció y no es abusivo (art. 41.3): si la persona dice que lo negoció de verdad, quítalo y dilo en el resumen. Qué dice la norma está en [references/la-ley.md](references/la-ley.md).
 - Los tipos de interés de cada semestre están en `assets/tipos-demora.json`, cada uno con la resolución del BOE de la que sale. El script los lee solo.
 - Si lista problemas del CSV, cada uno trae su línea: corrige y vuelve a ejecutar.
 - **Si dice que falta el tipo de demora de un semestre, no lo supongas.** Búscalo en el BOE como explica [references/la-ley.md](references/la-ley.md), y vuelve a ejecutar con `--tipo AAAA-S=TIPO`. Si no puedes consultarlo, dilo y para.
